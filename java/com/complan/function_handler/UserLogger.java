@@ -8,7 +8,14 @@ import java.util.regex.Pattern;
 
 /* Command Format
  * LOGIN <user-email> <password>
- * 
+ * LOGOUT
+ * REGISTER <name> <password> <mobile_number> <email-id>
+ * CREATE_WMSLOT <date(dd-mm-yy)> <time(hh:mm)>
+ * DELETE_WMSLOT <date(dd-mm-yy)> <time(hh:mm)>
+ * GIVE_WMSLOT <to email-id> <date(dd-mm-yy)> <time(hh:mm)>
+ * RECEIVE_WMSLOT <request-id> <accept(y/n)>
+ * USE_WMSLOT <date(dd-mm-yy)> <time(hh:mm)> <otp>
+ * DISPLAY_WMSLOTS <date<dd-mm-yy> <display only your slots(y/n)> 
  */
 
 public class UserLogger {
@@ -37,7 +44,7 @@ public class UserLogger {
             int idx = time.indexOf(':', 0);
             int hour = Integer.parseInt(time.substring(0, idx));
             int minute = Integer.parseInt(time.substring(idx + 1));
-            LocalDateTime dt = LocalDateTime.of(year, month, month, hour, minute, 0);
+            LocalDateTime dt = LocalDateTime.of(year, month, day, hour, minute, 0);
             return dt;
 
         } catch (Error e) {
