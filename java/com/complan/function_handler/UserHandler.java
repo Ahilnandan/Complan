@@ -121,7 +121,13 @@ public class UserHandler {
          * 0--> Succesfull Login
          * 1-->Incorrect password
          * 2-->User not found
+         * 3 --> already logged in
          */
+
+        User u = new User();
+        if (u.equals(currentUser) == false) {
+            return 3;
+        }
         for (int i = 0; i < Users.size(); i++) {
             if (Users.get(i).getEmail().equals(email)) {
                 if (encryptPassword(password).equals(Users.get(i).getPassword())) {

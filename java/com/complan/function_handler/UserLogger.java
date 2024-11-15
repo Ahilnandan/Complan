@@ -87,6 +87,9 @@ public class UserLogger {
                 } else if (response == 2) {
                     System.out.println(RED + "Invalid user email or user does not exist." + RESET);
                     return;
+                } else if (response == 3) {
+                    System.out.println(RED + "User already logged in.." + RESET);
+                    return;
                 }
             } else if (command.equals("LOGOUT")) {// LOGOUT
                 Handler.Logout();
