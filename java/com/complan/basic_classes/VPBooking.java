@@ -11,7 +11,7 @@ public class VPBooking {
 	private ArrayList<User> Partners;
 	private int VPID;
 
-	public VPBooking(User Owner, LocalDateTime departureTime, String fromLocation, String toLocaiton, int VPID) {
+	public VPBooking(User Owner, LocalDateTime departureTime, String fromLocation, String toLocation, int VPID) {
 		this.Owner = Owner;
 		this.departureTime = departureTime;
 		this.fromLocation = fromLocation;
