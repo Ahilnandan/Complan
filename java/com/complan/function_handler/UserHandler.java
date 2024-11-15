@@ -6,7 +6,6 @@ import com.complan.basic_classes.*;
 
 public class UserHandler {
     private ArrayList<User> Users;
-    private ArrayList<User> Admins;
     private ArrayList<WMSlot> WMSlots;
     private ArrayList<VPBooking> VPBookings;
     private ArrayList<Requests> RequestsList;
@@ -159,7 +158,13 @@ public class UserHandler {
          * 0 --> Successfull Booking
          * 1 --> Insufficient Credits
          * 2 --> Timing not available
+         * 3 --> Invalid/old timing
          */
+        LocalDateTime t = LocalDateTime.now();
+        if (start_Time.isBefore(t)) {
+            return 3;
+        }
+
         if (currentUser.getCredits() > 0) {// checking for sufficient credit
             currentUser.setCredits(currentUser.getCredits() - 1);// decremnt credit
         } else {
@@ -251,7 +256,7 @@ public class UserHandler {
         return 0;
     }
 
-    public int receiveWMSlot(int requestID, boolean accept) {
+    public int receive_WMSlot(int requestID, boolean accept, boolean isWMR) {
         /*
          * Status Code
          * 1 --> request not found
@@ -281,14 +286,20 @@ public class UserHandler {
         }
 
         if (accept == true) {// request accepted
-            WMSlot oldSlot = WMSlots.get(RequestsList.get(RequestIndex).getSlotId() - 1);// get old slot details
-            WMSlot wmslot = new WMSlot(currentUser, oldSlot.getStartTime(), oldSlot.getEndTime(), generateOTP(4),
-                    WMSlots.size());// create now slot with same timings but new user,otp,id
-            WMSlots.remove(RequestsList.get(RequestIndex).getSlotId() - 1);
-            WMSlots.add(wmslot);
-            Users.get(UserIndex).setCredits(Users.get(UserIndex).getCredits() + 1);
-            currentUser.setCredits(currentUser.getCredits() - 1);
-            return 0;
+            if (isWMR == true) {
+                WMSlot oldSlot = WMSlots.get(RequestsList.get(RequestIndex).getSlotId() - 1);// get old slot details
+                WMSlot wmslot = new WMSlot(currentUser, oldSlot.getStartTime(), oldSlot.getEndTime(), generateOTP(4),
+                        WMSlots.size());// create now slot with same timings but new user,otp,id
+                WMSlots.remove(RequestsList.get(RequestIndex).getSlotId() - 1);
+                WMSlots.add(wmslot);
+                Users.get(UserIndex).setCredits(Users.get(UserIndex).getCredits() + 1);
+                currentUser.setCredits(currentUser.getCredits() - 1);
+                return 0;
+            } else {
+                RequestsList.get(RequestIndex).setAccept(true);
+                VPBookings.get(RequestsList.get(RequestIndex).getSlotId()).addPartner(Users.get(UserIndex));
+                return 0;
+            }
         }
 
         return 3;// request rejected
@@ -355,7 +366,130 @@ public class UserHandler {
         // display slots jni code
     }
 
-    public void viewVPSlotsOnDay(LocalDateTime day, String from, String to) {
+    public void viewVPSlotsOnDay(LocalDateTime day, String from, String to, boolean inSlot) {
+        ArrayList<VPBooking> vpbookings = new ArrayList<>();
 
+        for (int i = 0; i < VPBookings.size(); i++) {
+            VPBooking vp = VPBookings.get(i);
+            if (vp.getDeparture() == day && vp.getFromLocation() == from && vp.getToLocation() == to) {
+                vpbookings.add(vp);
+            }
+        }
+
+        // display slots JNI Code
+    }
+
+    public int createSlot(LocalDateTime day, String from, String to) {
+        /*
+         * Status Codes
+         * 0 --> slot created
+         * 1 --> invalid/old date time
+         */
+        LocalDateTime t = LocalDateTime.now();
+        if (day.isBefore(t) == true) {
+            return 1;
+        }
+        VPBooking vp = new VPBooking(currentUser, day, from, to, VPBookings.size());
+        VPBookings.add(vp);
+        return 0;
+    }
+
+    public int sendJoinRequest(int id) {
+        /*
+         * Status Codes
+         * 1 --> Invalid Slot ID
+         * 0 --> Request sent
+         */
+        if (id > VPBookings.size()) {
+            return 1;
+        }
+
+        Requests r = new Requests(currentUser.getName(), VPBookings.get(id).getOwner().getName(), "VP Join Request",
+                LocalDateTime.now(), RequestsList.size(), id);
+        RequestsList.add(r);
+        return 0;
+    }
+
+    public int removePartner(String partnerName, int slotID) {
+        /*
+         * Status Code
+         * 1 --> invalid slot
+         * 2 --> partner unavailable
+         * 3 --> not owner
+         */
+        if (slotID > VPBookings.size()) {
+            return 1;
+        }
+
+        if (VPBookings.get(slotID).getOwner().equals(currentUser) == false) {
+            return 3;
+        }
+
+        int isPartner = -1;
+        for (int i = 0; i < VPBookings.get(slotID).getPartners().size(); i++) {
+            if (VPBookings.get(slotID).getPartners().get(i).getName() == partnerName) {
+                isPartner = i;
+            }
+        }
+
+        if (isPartner == -1) {
+            return 2;
+        }
+
+        VPBookings.get(slotID).getPartners().remove(isPartner);
+        return 0;
+    }
+
+    public int leaveVPSlot(int slotID) {
+        /*
+         * Status Codes
+         * 1 --> invalid slot id
+         * 2 --> owner left slot. randomly assigned new owner
+         * 3 --> not found in slot
+         * 0 --> left slot
+         */
+        if (slotID > VPBookings.size()) {
+            return 1;
+        }
+
+        if (VPBookings.get(slotID).getOwner() == currentUser) {
+            int Index = (int) Math.random() * VPBookings.get(slotID).getPartners().size();
+            VPBookings.get(slotID).setOwner(VPBookings.get(slotID).getPartners().get(Index));
+            VPBookings.get(slotID).getPartners().remove(Index);
+            return 2;
+        }
+
+        int UserIndex = 1;
+        for (int i = 0; i < VPBookings.get(slotID).getPartners().size(); i++) {
+            if (VPBookings.get(slotID).getPartners().get(i) == currentUser) {
+                UserIndex = i;
+            }
+        }
+
+        if (UserIndex == -1) {
+            return 3;
+        }
+
+        VPBookings.get(slotID).getPartners().remove(UserIndex);
+        return 0;
+    }
+
+    public int deleteVPSlot(int slotID) {
+        /*
+         * Status Code
+         * 0 --> slot deleted successfully
+         * 1 --> invalid slot id
+         * 2 --> not owner;
+         */
+        if (slotID > VPBookings.size()) {
+            return 1;
+        }
+
+        if (VPBookings.get(slotID).getOwner() != currentUser) {
+            return 2;
+        }
+
+        VPBookings.remove(slotID);
+        return 0;
     }
 }

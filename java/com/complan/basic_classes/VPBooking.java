@@ -9,9 +9,9 @@ public class VPBooking {
 	private String fromLocation;
 	private String toLocation;
 	private ArrayList<User> Partners;
-	private String VPID;
+	private int VPID;
 
-	public VPBooking(User Owner, LocalDateTime departureTime, String fromLocation, String toLocaiton, String VPID) {
+	public VPBooking(User Owner, LocalDateTime departureTime, String fromLocation, String toLocaiton, int VPID) {
 		this.Owner = Owner;
 		this.departureTime = departureTime;
 		this.fromLocation = fromLocation;
@@ -52,7 +52,7 @@ public class VPBooking {
 		return Partners;
 	}
 
-	public String getVPID() {
+	public int getVPID() {
 		return VPID;
 	}
 
@@ -72,7 +72,7 @@ public class VPBooking {
 		this.toLocation = toLocation;
 	}
 
-	public void setVPID(String VPID) {
+	public void setVPID(int VPID) {
 		this.VPID = VPID;
 	}
 }
