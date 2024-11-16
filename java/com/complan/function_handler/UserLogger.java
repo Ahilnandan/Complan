@@ -92,8 +92,12 @@ public class UserLogger {
                     return;
                 }
             } else if (command.equals("LOGOUT")) {// LOGOUT
-                Handler.Logout();
-                System.out.println(GREEN + "Logged out successfully..." + RESET);
+                int LOresponse = Handler.Logout();
+                if (LOresponse == 0) {
+                    System.out.println(GREEN + "Logged out successfully..." + RESET);
+                } else if (LOresponse == 1) {
+                    System.out.println(RED + "User is not logged in..." + RESET);
+                }
             } else if (command.equals("REGISTER")) {// REGISTER
                 if (commands.size() < 5) {
                     System.out.println(RED + "Invalid Arguments.." + RESET);

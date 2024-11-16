@@ -143,7 +143,10 @@ public class UserHandler {
         return 2;
     }
 
-    public void Logout() {
+    public int Logout() {
+        if (isLoggedIn == false) {
+            return 1;
+        }
         isLoggedIn = false;
         for (int i = 0; i < Users.size(); i++) {
             if (currentUser.sameUser(Users.get(i)) == true) {
@@ -152,6 +155,7 @@ public class UserHandler {
             }
         }
         currentUser = new User();
+        return 0;
     }
 
     public void Exit() {
