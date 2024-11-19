@@ -1,58 +1,59 @@
 package com.complan.function_handler;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+//import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import com.complan.basic_classes.*;
 
 public class UserHandler {
-    private ArrayList<User> Users;
-    private ArrayList<WMSlot> WMSlots;
-    private ArrayList<VPBooking> VPBookings;
-    private ArrayList<Requests> RequestsList;
+    private LinkedHashMap<String, User> Users;
+    private LinkedHashMap<String, WMSlot> WMSlots;
+    private LinkedHashMap<String, VPBooking> VPBookings;
+    private LinkedHashMap<String, Requests> RequestsList;
     private String WMStatus;
     private boolean isLoggedIn = false;
     private User currentUser;
 
     public UserHandler() {
-        this.Users = new ArrayList<User>();
-        this.WMSlots = new ArrayList<WMSlot>();
-        this.VPBookings = new ArrayList<VPBooking>();
-        this.RequestsList = new ArrayList<Requests>();
+        this.Users = new LinkedHashMap<String, User>();
+        this.WMSlots = new LinkedHashMap<String, WMSlot>();
+        this.VPBookings = new LinkedHashMap<String, VPBooking>();
+        this.RequestsList = new LinkedHashMap<String, Requests>();
         this.isLoggedIn = false;
         this.currentUser = new User();
         /* DB acquire data and put in these arraylists logic */
     }
 
     // GETTERS AND SETTERS
-    public ArrayList<User> getUsers() {
+    public LinkedHashMap<String, User> getUsers() {
         return Users;
     }
 
-    public void setUsers(ArrayList<User> users) {
+    public void setUsers(LinkedHashMap<String, User> users) {
         Users = users;
     }
 
-    public ArrayList<Requests> getRequests() {
+    public LinkedHashMap<String, Requests> getRequests() {
         return RequestsList;
     }
 
-    public void setRequests(ArrayList<Requests> rl) {
+    public void setRequests(LinkedHashMap<String, Requests> rl) {
         this.RequestsList = rl;
     }
 
-    public ArrayList<WMSlot> getWMSlots() {
+    public LinkedHashMap<String, WMSlot> getWMSlots() {
         return WMSlots;
     }
 
-    public void setWMSlots(ArrayList<WMSlot> wMSlots) {
+    public void setWMSlots(LinkedHashMap<String, WMSlot> wMSlots) {
         WMSlots = wMSlots;
     }
 
-    public ArrayList<VPBooking> getVPBookings() {
+    public LinkedHashMap<String, VPBooking> getVPBookings() {
         return VPBookings;
     }
 
-    public void setVPBookings(ArrayList<VPBooking> vPBookings) {
+    public void setVPBookings(LinkedHashMap<String, VPBooking> vPBookings) {
         VPBookings = vPBookings;
     }
 
@@ -105,13 +106,13 @@ public class UserHandler {
          * 0 --> Registered successfully
          */
 
-        for (int i = 0; i < Users.size(); i++) {
-            if (Users.get(i).getEmail() == emailID) {
-                return 1;
-            }
+        if (Users.get(emailID) != null) {
+            return 1;
         }
-        User user = new User(name, emailID, MobileNumber, encryptPassword(password), Users.size() + 1);
-        Users.add(user);
+
+        String Uid = "U" + Integer.toString(Users.size());
+        User user = new User(name, emailID, MobileNumber, encryptPassword(password), Uid);
+        Users.put(emailID, user);
         return 0;
     }
 
@@ -128,19 +129,19 @@ public class UserHandler {
         if (u.equals(currentUser) == false) {
             return 3;
         }
-        for (int i = 0; i < Users.size(); i++) {
-            if (Users.get(i).getEmail().equals(email)) {
-                if (encryptPassword(password).equals(Users.get(i).getPassword())) {
-                    this.isLoggedIn = true;
-                    this.currentUser = Users.get(i);
-                    return 0;
-                } else {
-                    return 1;
-                }
-            }
+
+        if (Users.get(email) == null) {
+            return 2;
         }
 
-        return 2;
+        User u1 = Users.get(email);
+        if (encryptPassword(password).equals(u1.getPassword())) {
+            this.isLoggedIn = true;
+            this.currentUser = u1;
+            return 0;
+        } else {
+            return 1;
+        }
     }
 
     public int Logout() {
@@ -148,12 +149,7 @@ public class UserHandler {
             return 1;
         }
         isLoggedIn = false;
-        for (int i = 0; i < Users.size(); i++) {
-            if (currentUser.sameUser(Users.get(i)) == true) {
-                Users.get(i).copy(currentUser);
-                break;
-            }
-        }
+        Users.get(currentUser.getEmail()).copy(currentUser);
         currentUser = new User();
         return 0;
     }
@@ -182,7 +178,7 @@ public class UserHandler {
         }
         LocalDateTime end_Time = start_Time.plusHours(1);
 
-        for (int i = 0; i < WMSlots.size(); i++) { // checking for time clash b/w slots
+        for (String i : WMSlots.keySet()) { // checking for time clash b/w slots
             LocalDateTime st = WMSlots.get(i).getStartTime().minusMinutes(15);
             LocalDateTime et = WMSlots.get(i).getEndTime().plusMinutes(15);
             if (start_Time.isBefore(et) && st.isBefore(end_Time)) {
@@ -190,12 +186,13 @@ public class UserHandler {
             }
         }
 
-        WMSlot wmslot = new WMSlot(currentUser, start_Time, end_Time, generateOTP(4), WMSlots.size() + 1);
-        WMSlots.add(wmslot);
+        String WMid = "WM" + Integer.toString(WMSlots.size());
+        WMSlot wmslot = new WMSlot(currentUser, start_Time, end_Time, generateOTP(4), WMid);
+        WMSlots.put(WMid, wmslot);
         return 0;
     }
 
-    public int deleteWMSlot(LocalDateTime start_Time) {
+    public int deleteWMSlot(String slotID, LocalDateTime start_Time) {
         /*
          * Status Codes
          * 0 --> Deleted successfully
@@ -203,31 +200,23 @@ public class UserHandler {
          * 2 --> Cannot delete slot for less than 2 hours prior to start time
          */
 
-        int SlotIndex = -1;
-
-        for (int i = 0; i < WMSlots.size(); i++) {
-            if (WMSlots.get(i).getUser().getEmail() == currentUser.getEmail()
-                    && WMSlots.get(i).getStartTime() == start_Time) {
-                SlotIndex = i;
-            }
-        }
-
-        if (SlotIndex == -1) {// checking if slot exists
+        if (WMSlots.get(slotID) == null) {// slot does not exist
             return 1;
         }
 
         LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(start_Time.minusHours(2)) == true) {// check if delete time is more than 2 hours prior to slot
-            WMSlots.remove(SlotIndex);// removing slot // start time
+            currentUser.setPoints(currentUser.getPoints() - 10);
+            WMSlots.remove(slotID);// removing slot // start time
             return 2;
         }
 
-        WMSlots.remove(SlotIndex);// removing slot
+        WMSlots.remove(slotID);// removing slot
         currentUser.setCredits(currentUser.getCredits() + 1);// increasing credit back
         return 0;
     }
 
-    public int giveWMSlot(String to_email, LocalDateTime start_Time) {
+    public int giveWMSlot(String slotID, String to_email, LocalDateTime start_Time) {
         /*
          * Status Codes
          * 0 --> Request sent successfully
@@ -235,79 +224,56 @@ public class UserHandler {
          * 2 --> User not found
          */
 
-        int SlotIndex = -1;
-
-        for (int i = 0; i < WMSlots.size(); i++) {
-            if (WMSlots.get(i).getUser().getEmail() == currentUser.getEmail()
-                    && WMSlots.get(i).getStartTime() == start_Time) {
-                SlotIndex = i;
-            }
-        }
-
-        if (SlotIndex == -1) {// checking if slot exists
+        if (WMSlots.get(slotID) == null) {// slot does not exist
             return 1;
         }
 
-        int UserIndex = -1;
-        for (int i = 0; i < Users.size(); i++) {
-            if (Users.get(i).getEmail() == to_email) {
-                UserIndex = i;
-            }
-        }
-
-        if (UserIndex == -1) {// user does not exist
+        if (Users.get(to_email) == null) {// user does not exist
             return 2;
         }
 
         LocalDateTime now = LocalDateTime.now();
-        Requests request = new Requests(currentUser.getEmail(), to_email, "give WMSlot", now, RequestsList.size() + 1,
-                WMSlots.get(SlotIndex).getSlotId());
-        RequestsList.add(request);
+        String Rid = "R" + Integer.toString(RequestsList.size());
+        Requests request = new Requests(currentUser.getEmail(), to_email, "give WMSlot", now, Rid,
+                slotID);
+        RequestsList.put(Rid, request);
         return 0;
     }
 
-    public int receive_WMSlot(int requestID, boolean accept, boolean isWMR) {
+    public int receive_WMSlot(String requestID, boolean accept, boolean isWMR) {
         /*
          * Status Code
          * 1 --> request not found
          * 2 --> user does not exist
          * 3 --> give request rejected
+         * 4 --> receiver does not have enough credits to accept request
          */
-        int RequestIndex = -1;
-        for (int i = 0; i < RequestsList.size(); i++) {
-            if (RequestsList.get(i).getRequestId() == requestID) {
-                RequestIndex = i;
-            }
-        }
 
-        if (RequestIndex == -1) {// checking if request exists
+        if (RequestsList.get(requestID) == null) {// checking if request exists
             return 1;
         }
 
-        int UserIndex = -1;
-        for (int i = 0; i < Users.size(); i++) {
-            if (Users.get(i).getEmail() == RequestsList.get(UserIndex).getFrom()) {
-                UserIndex = i;
-            }
-        }
-
-        if (UserIndex == -1) {// user does not exist
+        if (Users.get(RequestsList.get(requestID).getFrom()) == null) {// user does not exist
             return 2;
         }
 
         if (accept == true) {// request accepted
             if (isWMR == true) {
-                WMSlot oldSlot = WMSlots.get(RequestsList.get(RequestIndex).getSlotId() - 1);// get old slot details
-                WMSlot wmslot = new WMSlot(currentUser, oldSlot.getStartTime(), oldSlot.getEndTime(), generateOTP(4),
-                        WMSlots.size());// create now slot with same timings but new user,otp,id
-                WMSlots.remove(RequestsList.get(RequestIndex).getSlotId() - 1);
-                WMSlots.add(wmslot);
-                Users.get(UserIndex).setCredits(Users.get(UserIndex).getCredits() + 1);
-                currentUser.setCredits(currentUser.getCredits() - 1);
+                if (currentUser.getCredits() <= 0) {
+                    return 4;
+                }
+                WMSlots.get(RequestsList.get(requestID).getSlotId()).setUser(currentUser);// set to current user
+                WMSlots.get(RequestsList.get(requestID).getSlotId()).setOTP(generateOTP(4));// generate new OTP
+                Users.get(RequestsList.get(requestID).getFrom())
+                        .setCredits(Users.get(RequestsList.get(requestID).getFrom()).getCredits() + 1);// increment
+                                                                                                       // sender's
+                                                                                                       // credit
+                currentUser.setCredits(currentUser.getCredits() - 1);// decrement receiver's credits
                 return 0;
             } else {
-                RequestsList.get(RequestIndex).setAccept(true);
-                VPBookings.get(RequestsList.get(RequestIndex).getSlotId()).addPartner(Users.get(UserIndex));
+                RequestsList.get(requestID).setAccept(true);
+                VPBookings.get(RequestsList.get(requestID).getSlotId())
+                        .addPartner(Users.get(RequestsList.get(requestID).getFrom()));
                 return 0;
             }
         }
@@ -315,7 +281,7 @@ public class UserHandler {
         return 3;// request rejected
     }
 
-    public int useWMSlot(LocalDateTime start_Time, int OTP) {
+    public int useWMSlot(String slotID, LocalDateTime start_Time, int OTP) {
         /*
          * Status Codes
          * 0 --> WM started running
@@ -325,23 +291,14 @@ public class UserHandler {
          * 4 --> Too late to start slot
          */
 
-        int SlotIndex = -1;
-
-        for (int i = 0; i < WMSlots.size(); i++) {
-            if (WMSlots.get(i).getUser().getEmail() == currentUser.getEmail()
-                    && WMSlots.get(i).getStartTime() == start_Time) {
-                SlotIndex = i;
-            }
-        }
-
-        if (SlotIndex == -1) {// checking if slot exists
+        if (WMSlots.get(slotID) == null) {// slot does not exist
             return 1;
         }
 
         LocalDateTime now = LocalDateTime.now();
 
         if (now.isAfter(start_Time) && now.isBefore(start_Time.plusMinutes(15))) {
-            if (WMSlots.get(SlotIndex).getOTP() == OTP) {
+            if (WMSlots.get(slotID).getOTP() == OTP) {
                 this.WMStatus = "In use";
                 currentUser.setPoints(currentUser.getPoints() + 10);
                 return 0;
@@ -358,31 +315,31 @@ public class UserHandler {
     }
 
     public void displayAllSlotsOnDay(LocalDateTime day, boolean yourslot) {
-        ArrayList<WMSlot> allslots = new ArrayList<>();
-        for (int i = 0; i < WMSlots.size(); i++) {
+        LinkedHashMap<String, WMSlot> allslots = new LinkedHashMap<String, WMSlot>();
+        for (String i : WMSlots.keySet()) {
             LocalDateTime date = WMSlots.get(i).getStartTime();
             if (date.getDayOfMonth() == day.getDayOfMonth() && date.getMonth() == day.getMonth()
                     && date.getYear() == day.getYear()) {
                 if (yourslot == true) {
                     if (WMSlots.get(i).getUser().getName() == currentUser.getName()) {
-                        allslots.add(WMSlots.get(i));
+                        allslots.put(i, WMSlots.get(i));
                     }
                 } else {
-                    allslots.add(WMSlots.get(i));
+                    allslots.put(i, WMSlots.get(i));
                 }
             }
         }
 
-        // display slots jni code
+        // display slots jni code (Cpp)
     }
 
     public void viewVPSlotsOnDay(LocalDateTime day, String from, String to, boolean inSlot) {
-        ArrayList<VPBooking> vpbookings = new ArrayList<>();
+        LinkedHashMap<String, VPBooking> vpbookings = new LinkedHashMap<String, VPBooking>();
 
-        for (int i = 0; i < VPBookings.size(); i++) {
+        for (String i : VPBookings.keySet()) {
             VPBooking vp = VPBookings.get(i);
             if (vp.getDeparture() == day && vp.getFromLocation() == from && vp.getToLocation() == to) {
-                vpbookings.add(vp);
+                vpbookings.put(vp.getVPID(), vp);
             }
         }
 
@@ -399,35 +356,39 @@ public class UserHandler {
         if (day.isBefore(t) == true) {
             return 1;
         }
-        VPBooking vp = new VPBooking(currentUser, day, from, to, VPBookings.size());
-        VPBookings.add(vp);
+
+        String VPid = "VP" + Integer.toString(VPBookings.size());
+        VPBooking vp = new VPBooking(currentUser, day, from, to, VPid);
+        VPBookings.put(VPid, vp);
         return 0;
     }
 
-    public int sendJoinRequest(int id) {
+    public int sendJoinRequest(String id) {
         /*
          * Status Codes
          * 1 --> Invalid Slot ID
          * 0 --> Request sent
          */
-        if (id > VPBookings.size()) {
+        if (VPBookings.get(id) == null) {
             return 1;
         }
 
+        String rID = "R" + Integer.toString(RequestsList.size());
         Requests r = new Requests(currentUser.getName(), VPBookings.get(id).getOwner().getName(), "VP Join Request",
-                LocalDateTime.now(), RequestsList.size(), id);
-        RequestsList.add(r);
+                LocalDateTime.now(), rID, id);
+        RequestsList.put(rID, r);
         return 0;
     }
 
-    public int removePartner(String partnerName, int slotID) {
+    public int removePartner(String partnerName, String slotID) {
         /*
          * Status Code
          * 1 --> invalid slot
          * 2 --> partner unavailable
          * 3 --> not owner
          */
-        if (slotID > VPBookings.size()) {
+
+        if (VPBookings.get(slotID) == null) {
             return 1;
         }
 
@@ -437,7 +398,7 @@ public class UserHandler {
 
         int isPartner = -1;
         for (int i = 0; i < VPBookings.get(slotID).getPartners().size(); i++) {
-            if (VPBookings.get(slotID).getPartners().get(i).getName() == partnerName) {
+            if (VPBookings.get(slotID).getPartners().get(i).getName().equals(partnerName)) {
                 isPartner = i;
             }
         }
@@ -450,7 +411,7 @@ public class UserHandler {
         return 0;
     }
 
-    public int leaveVPSlot(int slotID) {
+    public int leaveVPSlot(String slotID) {
         /*
          * Status Codes
          * 1 --> invalid slot id
@@ -458,25 +419,26 @@ public class UserHandler {
          * 3 --> not found in slot
          * 0 --> left slot
          */
-        if (slotID > VPBookings.size()) {
+
+        if (VPBookings.get(slotID) == null) {// vp slot not found
             return 1;
         }
 
-        if (VPBookings.get(slotID).getOwner() == currentUser) {
+        if (VPBookings.get(slotID).getOwner() == currentUser) {// if owner change owner
             int Index = (int) Math.random() * VPBookings.get(slotID).getPartners().size();
             VPBookings.get(slotID).setOwner(VPBookings.get(slotID).getPartners().get(Index));
             VPBookings.get(slotID).getPartners().remove(Index);
             return 2;
         }
 
-        int UserIndex = 1;
+        int UserIndex = -1;
         for (int i = 0; i < VPBookings.get(slotID).getPartners().size(); i++) {
             if (VPBookings.get(slotID).getPartners().get(i) == currentUser) {
                 UserIndex = i;
             }
         }
 
-        if (UserIndex == -1) {
+        if (UserIndex == -1) {// partner not found
             return 3;
         }
 
@@ -484,18 +446,19 @@ public class UserHandler {
         return 0;
     }
 
-    public int deleteVPSlot(int slotID) {
+    public int deleteVPSlot(String slotID) {
         /*
          * Status Code
          * 0 --> slot deleted successfully
          * 1 --> invalid slot id
          * 2 --> not owner;
          */
-        if (slotID > VPBookings.size()) {
+
+        if (VPBookings.get(slotID) == null) {// slot not found
             return 1;
         }
 
-        if (VPBookings.get(slotID).getOwner() != currentUser) {
+        if (VPBookings.get(slotID).getOwner() != currentUser) {// not owner
             return 2;
         }
 

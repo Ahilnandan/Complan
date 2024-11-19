@@ -7,10 +7,10 @@ public class User {
 	private String emailId;
 	private String MobileNumber;
 	private boolean isAdmin;
-	private int userId;
+	private String userId;
 	private String password;
 
-	public User(String name, String emailId, String MobileNumber, String password, int userId) {
+	public User(String name, String emailId, String MobileNumber, String password, String userId) {
 		this.name = name;
 		this.emailId = emailId;
 		this.MobileNumber = MobileNumber;
@@ -25,7 +25,7 @@ public class User {
 
 	}
 
-	public User(String name, String emailId, String MobileNumber, int userId, boolean isAdmin) {
+	public User(String name, String emailId, String MobileNumber, String userId, boolean isAdmin) {
 		this.name = name;
 		this.emailId = emailId;
 		this.MobileNumber = MobileNumber;
@@ -75,7 +75,7 @@ public class User {
 		return password;
 	}
 
-	public int getUserID() {
+	public String getUserID() {
 		return userId;
 	}
 
@@ -103,7 +103,7 @@ public class User {
 		this.MobileNumber = MobileNumber;
 	}
 
-	public void setUserID(int userId) {
+	public void setUserID(String userId) {
 		this.userId = userId;
 	}
 

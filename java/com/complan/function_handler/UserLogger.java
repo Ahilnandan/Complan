@@ -13,9 +13,15 @@ import java.util.regex.Pattern;
  * CREATE_WMSLOT <date(dd-mm-yy)> <time(hh:mm)>
  * DELETE_WMSLOT <date(dd-mm-yy)> <time(hh:mm)>
  * GIVE_WMSLOT <to email-id> <date(dd-mm-yy)> <time(hh:mm)>
- * RECEIVE_WMSLOT <request-id> <accept(y/n)>
+ * RESPOND_REQUEST <requestID> <accept(y/n)> //types --> "VP Join Request" , "give WMSlot"
  * USE_WMSLOT <date(dd-mm-yy)> <time(hh:mm)> <otp>
- * DISPLAY_WMSLOTS <date<dd-mm-yy> <display only your slots(y/n)> 
+ * DISPLAY_WMSLOTS <date(dd-mm-yy)> <display only your slots(y/n)> 
+ * DISPLAY_VPSLOTS <date(dd-mm-yy)> <time(hh:mm)> <from> <to> <your slots(slots in which you are present) y/n>
+ * CREATE_VPSLOT <date(dd-mm-yy)> <time(hh:mm)> <from> <to>
+ * JOIN_VPSLOT <slotID>
+ * REMOVE_PARTNER <slotID> <partner email>
+ * LEAVE_VPSLOT <slotID>
+ * DELETE_VPSLOT <slotID>
  */
 
 public class UserLogger {

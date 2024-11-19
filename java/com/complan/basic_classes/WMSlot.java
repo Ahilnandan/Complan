@@ -7,9 +7,9 @@ public class WMSlot {
 	private LocalDateTime startTime;
 	private LocalDateTime endTime;
 	private int OTP;
-	private int slotId;
+	private String slotId;
 
-	public WMSlot(User user, LocalDateTime startTime, LocalDateTime endTime, int OTP, int slotId) {
+	public WMSlot(User user, LocalDateTime startTime, LocalDateTime endTime, int OTP, String slotId) {
 		this.user = user;
 		this.startTime = startTime;
 		this.endTime = endTime;
@@ -33,7 +33,7 @@ public class WMSlot {
 		return OTP;
 	}
 
-	public int getSlotId() {
+	public String getSlotId() {
 		return slotId;
 	}
 
@@ -53,7 +53,7 @@ public class WMSlot {
 		this.OTP = OTP;
 	}
 
-	public void setSlotId(int slotId) {
+	public void setSlotId(String slotId) {
 		this.slotId = slotId;
 	}
 }

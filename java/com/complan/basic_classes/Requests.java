@@ -8,10 +8,10 @@ public class Requests {
 	private String type;
 	private LocalDateTime timeOfRequest;
 	private boolean isAccepted = false;
-	private int SlotID;
-	private int requestId;
+	private String SlotID;
+	private String requestId;
 
-	public Requests(String from, String to, String type, LocalDateTime timeOfRequest, int requestId, int SlotID) {
+	public Requests(String from, String to, String type, LocalDateTime timeOfRequest, String requestId, String SlotID) {
 		this.from = from;
 		this.to = to;
 		this.type = type;
@@ -41,11 +41,11 @@ public class Requests {
 		return isAccepted;
 	}
 
-	public int getRequestId() {
+	public String getRequestId() {
 		return requestId;
 	}
 
-	public int getSlotId() {
+	public String getSlotId() {
 		return SlotID;
 	}
 
@@ -65,7 +65,7 @@ public class Requests {
 		this.type = type;
 	}
 
-	public void setRequestId(int requestId) {
+	public void setRequestId(String requestId) {
 		this.requestId = requestId;
 	}
 
@@ -73,7 +73,7 @@ public class Requests {
 		this.timeOfRequest = timeOfRequest;
 	}
 
-	public void setSlotId(int SlotId) {
+	public void setSlotId(String SlotId) {
 		this.SlotID = SlotId;
 	}
 }
