@@ -22,6 +22,10 @@ import java.util.regex.Pattern;
  * REMOVE_PARTNER <slotID> <partner email>
  * LEAVE_VPSLOT <slotID>
  * DELETE_VPSLOT <slotID>
+ * HELP
+ * EXIT
+ * RULES
+ * On entering invalid command display "Please enter HELP to know command formats"
  */
 
 public class UserLogger {
