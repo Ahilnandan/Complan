@@ -1,14 +1,14 @@
 package com.complan.basic_classes;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Vector;
 
 public class VPBooking {
 	private User Owner;
 	private LocalDateTime departureTime;
 	private String fromLocation;
 	private String toLocation;
-	private ArrayList<User> Partners;
+	private Vector<User> Partners;
 	private String VPID;
 
 	public VPBooking(User Owner, LocalDateTime departureTime, String fromLocation, String toLocation, String VPID) {
@@ -17,7 +17,7 @@ public class VPBooking {
 		this.fromLocation = fromLocation;
 		this.toLocation = toLocation;
 		this.VPID = VPID;
-		Partners = new ArrayList<User>();
+		Partners = new Vector<User>();
 	}
 
 	public void addPartner(User hi) {
@@ -48,7 +48,7 @@ public class VPBooking {
 		return toLocation;
 	}
 
-	public ArrayList<User> getPartners() {
+	public Vector<User> getPartners() {
 		return Partners;
 	}
 

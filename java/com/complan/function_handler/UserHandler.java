@@ -1,7 +1,7 @@
 package com.complan.function_handler;
 
 import java.time.LocalDateTime;
-//import java.util.ArrayList;
+//import java.util.Vector;
 import java.util.LinkedHashMap;
 import com.complan.basic_classes.*;
 
@@ -21,7 +21,7 @@ public class UserHandler {
         this.RequestsList = new LinkedHashMap<String, Requests>();
         this.isLoggedIn = false;
         this.currentUser = new User();
-        /* DB acquire data and put in these arraylists logic */
+        /* DB acquire data and put in these Vectors logic */
     }
 
     // GETTERS AND SETTERS

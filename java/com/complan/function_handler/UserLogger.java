@@ -1,7 +1,7 @@
 package com.complan.function_handler;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Vector;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,7 +37,7 @@ public class UserLogger {
 
     public LocalDateTime parseDate(String date, String time) {
         try {
-            ArrayList<Integer> Date_Indices = new ArrayList<Integer>();
+            Vector<Integer> Date_Indices = new Vector<Integer>();
             for (int i = 0; i < date.length(); i++) {
                 if (date.charAt(i) == '-') {
                     Date_Indices.add(i);
@@ -59,8 +59,8 @@ public class UserLogger {
         }
     }
 
-    public ArrayList<String> parseCommands(String command) {
-        ArrayList<String> tokens = new ArrayList<String>();
+    public Vector<String> parseCommands(String command) {
+        Vector<String> tokens = new Vector<String>();
         Matcher matcher = Pattern.compile("\"([^\"]*)\"|(\\S+)").matcher(command);
         while (matcher.find()) {
             if (matcher.group(1) != null) {
@@ -75,7 +75,7 @@ public class UserLogger {
     public void get_executeCommands(Scanner scanner) {
         while (scanner.hasNextLine() == true) {
             String input = scanner.nextLine();
-            ArrayList<String> commands = parseCommands(input);
+            Vector<String> commands = parseCommands(input);
             String command = commands.get(0);
 
             if (command.equals("LOGIN")) {// LOGIN
