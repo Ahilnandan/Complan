@@ -20,7 +20,7 @@ public class UserHandler {
         this.VPBookings = new LinkedHashMap<String, VPBooking>();
         this.RequestsList = new LinkedHashMap<String, Requests>();
         this.isLoggedIn = false;
-        this.currentUser = new User();
+        this.currentUser = null;
         /* DB acquire data and put in these Vectors logic */
     }
 
@@ -145,16 +145,19 @@ public class UserHandler {
     }
 
     public int Logout() {
-        if (isLoggedIn == false) {
-            return 1;
+        if (isLoggedIn() == false) {
+            return 5;
         }
         isLoggedIn = false;
         Users.get(currentUser.getEmail()).copy(currentUser);
-        currentUser = new User();
+        currentUser = null;
         return 0;
     }
 
-    public void Exit() {
+    public int Exit() {
+        isLoggedIn = false;
+        currentUser = null;
+        return 0;
         /* Write back to DB function */
     }
 
@@ -165,10 +168,15 @@ public class UserHandler {
          * 1 --> Insufficient Credits
          * 2 --> Timing not available
          * 3 --> Invalid/old timing
+         * 5 --> User not logged in
          */
         LocalDateTime t = LocalDateTime.now();
         if (start_Time.isBefore(t)) {
             return 3;
+        }
+
+        if (isLoggedIn() == false) {
+            return 5;
         }
 
         if (currentUser.getCredits() > 0) {// checking for sufficient credit
@@ -198,10 +206,15 @@ public class UserHandler {
          * 0 --> Deleted successfully
          * 1 --> Slot not found
          * 2 --> Cannot delete slot for less than 2 hours prior to start time
+         * 5 --> User not logged in
          */
 
         if (WMSlots.get(slotID) == null) {// slot does not exist
             return 1;
+        }
+
+        if (isLoggedIn() == false) {
+            return 5;
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -222,6 +235,7 @@ public class UserHandler {
          * 0 --> Request sent successfully
          * 1 --> Slot not found
          * 2 --> User not found
+         * 5 --> User not logged in
          */
 
         if (WMSlots.get(slotID) == null) {// slot does not exist
@@ -230,6 +244,10 @@ public class UserHandler {
 
         if (Users.get(to_email) == null) {// user does not exist
             return 2;
+        }
+
+        if (isLoggedIn() == false) {
+            return 5;
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -247,6 +265,7 @@ public class UserHandler {
          * 2 --> user does not exist
          * 3 --> give request rejected
          * 4 --> receiver does not have enough credits to accept request
+         * 5 --> User not logged in
          */
 
         if (RequestsList.get(requestID) == null) {// checking if request exists
@@ -255,6 +274,10 @@ public class UserHandler {
 
         if (Users.get(RequestsList.get(requestID).getFrom()) == null) {// user does not exist
             return 2;
+        }
+
+        if (isLoggedIn() == false) {
+            return 5;
         }
 
         if (accept == true) {// request accepted
@@ -289,10 +312,15 @@ public class UserHandler {
          * 2 --> Wrong OTP
          * 3 --> Too early to start slot
          * 4 --> Too late to start slot
+         * 5 --> User not logged in
          */
 
         if (WMSlots.get(slotID) == null) {// slot does not exist
             return 1;
+        }
+
+        if (isLoggedIn() == false) {
+            return 5;
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -314,7 +342,15 @@ public class UserHandler {
         return -1;
     }
 
-    public void displayAllSlotsOnDay(LocalDateTime day, boolean yourslot) {
+    public int displayAllSlotsOnDay(LocalDateTime day, boolean yourslot) {
+        /*
+         * 5 --> User not logged in
+         * 0 --> slots displayed
+         */
+        if (isLoggedIn() == false) {
+            return 5;
+        }
+
         LinkedHashMap<String, WMSlot> allslots = new LinkedHashMap<String, WMSlot>();
         for (String i : WMSlots.keySet()) {
             LocalDateTime date = WMSlots.get(i).getStartTime();
@@ -331,9 +367,19 @@ public class UserHandler {
         }
 
         // display slots jni code (Cpp)
+        return 0;
     }
 
-    public void viewVPSlotsOnDay(LocalDateTime day, String from, String to, boolean inSlot) {
+    public int viewVPSlotsOnDay(LocalDateTime day, String from, String to, boolean inSlot) {
+        /*
+         * Status Codes
+         * 0 --> slots displayed
+         * 5 --> User not logged in
+         */
+        if (isLoggedIn() == false) {
+            return 5;
+        }
+
         LinkedHashMap<String, VPBooking> vpbookings = new LinkedHashMap<String, VPBooking>();
 
         for (String i : VPBookings.keySet()) {
@@ -342,7 +388,7 @@ public class UserHandler {
                 vpbookings.put(vp.getVPID(), vp);
             }
         }
-
+        return 0;
         // display slots JNI Code
     }
 
@@ -351,10 +397,15 @@ public class UserHandler {
          * Status Codes
          * 0 --> slot created
          * 1 --> invalid/old date time
+         * 5 --> User not logged in
          */
         LocalDateTime t = LocalDateTime.now();
         if (day.isBefore(t) == true) {
             return 1;
+        }
+
+        if (isLoggedIn() == false) {
+            return 5;
         }
 
         String VPid = "VP" + Integer.toString(VPBookings.size());
@@ -368,9 +419,14 @@ public class UserHandler {
          * Status Codes
          * 1 --> Invalid Slot ID
          * 0 --> Request sent
+         * 5 --> User not logged in
          */
         if (VPBookings.get(id) == null) {
             return 1;
+        }
+
+        if (isLoggedIn() == false) {
+            return 5;
         }
 
         String rID = "R" + Integer.toString(RequestsList.size());
@@ -380,12 +436,13 @@ public class UserHandler {
         return 0;
     }
 
-    public int removePartner(String partnerName, String slotID) {
+    public int removePartner(String partnerEmail, String slotID) {
         /*
          * Status Code
          * 1 --> invalid slot
-         * 2 --> partner unavailable
+         * 2 --> partner unavailable or does not exist
          * 3 --> not owner
+         * 5 --> User not logged in
          */
 
         if (VPBookings.get(slotID) == null) {
@@ -396,14 +453,18 @@ public class UserHandler {
             return 3;
         }
 
+        if (isLoggedIn() == false) {
+            return 5;
+        }
+
         int isPartner = -1;
         for (int i = 0; i < VPBookings.get(slotID).getPartners().size(); i++) {
-            if (VPBookings.get(slotID).getPartners().get(i).getName().equals(partnerName)) {
+            if (VPBookings.get(slotID).getPartners().get(i).getEmail().equals(partnerEmail)) {
                 isPartner = i;
             }
         }
 
-        if (isPartner == -1) {
+        if (isPartner == -1 || Users.get(partnerEmail) == null) {
             return 2;
         }
 
@@ -418,10 +479,15 @@ public class UserHandler {
          * 2 --> owner left slot. randomly assigned new owner
          * 3 --> not found in slot
          * 0 --> left slot
+         * 5 --> User not logged in
          */
 
         if (VPBookings.get(slotID) == null) {// vp slot not found
             return 1;
+        }
+
+        if (isLoggedIn() == false) {
+            return 5;
         }
 
         if (VPBookings.get(slotID).getOwner() == currentUser) {// if owner change owner
@@ -452,6 +518,7 @@ public class UserHandler {
          * 0 --> slot deleted successfully
          * 1 --> invalid slot id
          * 2 --> not owner;
+         * 5 --> User not logged in
          */
 
         if (VPBookings.get(slotID) == null) {// slot not found
@@ -460,6 +527,10 @@ public class UserHandler {
 
         if (VPBookings.get(slotID).getOwner() != currentUser) {// not owner
             return 2;
+        }
+
+        if (isLoggedIn() == false) {
+            return 5;
         }
 
         VPBookings.remove(slotID);
