@@ -145,8 +145,8 @@ public class UserHandler {
     }
 
     public int Logout() {
-        if (isLoggedIn() == false) {
-            return 5;
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
         }
         isLoggedIn = false;
         Users.get(currentUser.getEmail()).copy(currentUser);
@@ -156,6 +156,9 @@ public class UserHandler {
 
     public int Exit() {
         isLoggedIn = false;
+        if (currentUser != null) {
+            Users.get(currentUser.getEmail()).copy(currentUser);
+        }
         currentUser = null;
         return 0;
         /* Write back to DB function */
@@ -168,15 +171,15 @@ public class UserHandler {
          * 1 --> Insufficient Credits
          * 2 --> Timing not available
          * 3 --> Invalid/old timing
-         * 5 --> User not logged in
+         * -1 --> user not logged in
          */
         LocalDateTime t = LocalDateTime.now();
         if (start_Time.isBefore(t)) {
             return 3;
         }
 
-        if (isLoggedIn() == false) {
-            return 5;
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
         }
 
         if (currentUser.getCredits() > 0) {// checking for sufficient credit
@@ -206,20 +209,22 @@ public class UserHandler {
          * 0 --> Deleted successfully
          * 1 --> Slot not found
          * 2 --> Cannot delete slot for less than 2 hours prior to start time
-         * 5 --> User not logged in
+         * -1 --> user not logged in
          */
 
         if (WMSlots.get(slotID) == null) {// slot does not exist
             return 1;
         }
 
-        if (isLoggedIn() == false) {
-            return 5;
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
         }
 
         LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(start_Time.minusHours(2)) == true) {// check if delete time is more than 2 hours prior to slot
             currentUser.setPoints(currentUser.getPoints() - 10);
+            currentUser.setCms(currentUser.getCms() - 10);
+            currentUser.setCredits(currentUser.getCredits() + 1);
             WMSlots.remove(slotID);// removing slot // start time
             return 2;
         }
@@ -229,43 +234,48 @@ public class UserHandler {
         return 0;
     }
 
-    public int giveWMSlot(String slotID, String to_email, LocalDateTime start_Time) {
+    public int askWMSlot(String slotID, String to_email, LocalDateTime start_Time) {
         /*
          * Status Codes
          * 0 --> Request sent successfully
          * 1 --> Slot not found
          * 2 --> User not found
-         * 5 --> User not logged in
+         * 3 --> insufficient credits to ask for slot
+         * -1 --> user not logged in
          */
 
         if (WMSlots.get(slotID) == null) {// slot does not exist
             return 1;
         }
 
+        if (currentUser.getCredits() <= 0) {
+            return 3;
+        }
+
         if (Users.get(to_email) == null) {// user does not exist
             return 2;
         }
 
-        if (isLoggedIn() == false) {
-            return 5;
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
         }
 
         LocalDateTime now = LocalDateTime.now();
         String Rid = "R" + Integer.toString(RequestsList.size());
-        Requests request = new Requests(currentUser.getEmail(), to_email, "give WMSlot", now, Rid,
+        Requests request = new Requests(currentUser.getEmail(), to_email, "ask WMSlot", now, Rid,
                 slotID);
         RequestsList.put(Rid, request);
         return 0;
     }
 
-    public int receive_WMSlot(String requestID, boolean accept, boolean isWMR) {
+    public int receive_WMSlot(String requestID, boolean accept) {
         /*
          * Status Code
          * 1 --> request not found
          * 2 --> user does not exist
-         * 3 --> give request rejected
+         * 3 --> ask request rejected
          * 4 --> receiver does not have enough credits to accept request
-         * 5 --> User not logged in
+         * -1 --> user not logged in
          */
 
         if (RequestsList.get(requestID) == null) {// checking if request exists
@@ -276,15 +286,13 @@ public class UserHandler {
             return 2;
         }
 
-        if (isLoggedIn() == false) {
-            return 5;
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
         }
 
+        boolean isWMR = RequestsList.get(requestID).getType() == "ask WMSlot" ? true : false;
         if (accept == true) {// request accepted
             if (isWMR == true) {
-                if (currentUser.getCredits() <= 0) {
-                    return 4;
-                }
                 WMSlots.get(RequestsList.get(requestID).getSlotId()).setUser(currentUser);// set to current user
                 WMSlots.get(RequestsList.get(requestID).getSlotId()).setOTP(generateOTP(4));// generate new OTP
                 Users.get(RequestsList.get(requestID).getFrom())
@@ -312,15 +320,15 @@ public class UserHandler {
          * 2 --> Wrong OTP
          * 3 --> Too early to start slot
          * 4 --> Too late to start slot
-         * 5 --> User not logged in
+         * -1 --> user not logged in
          */
 
         if (WMSlots.get(slotID) == null) {// slot does not exist
             return 1;
         }
 
-        if (isLoggedIn() == false) {
-            return 5;
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -329,6 +337,8 @@ public class UserHandler {
             if (WMSlots.get(slotID).getOTP() == OTP) {
                 this.WMStatus = "In use";
                 currentUser.setPoints(currentUser.getPoints() + 10);
+                currentUser.setCms(currentUser.getCms() + 10);
+                WMSlots.get(slotID).setWMran(true);
                 return 0;
             } else {
                 return 2;
@@ -344,11 +354,11 @@ public class UserHandler {
 
     public int displayAllSlotsOnDay(LocalDateTime day, boolean yourslot) {
         /*
-         * 5 --> User not logged in
+         * -1 --> user not logged in
          * 0 --> slots displayed
          */
-        if (isLoggedIn() == false) {
-            return 5;
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
         }
 
         LinkedHashMap<String, WMSlot> allslots = new LinkedHashMap<String, WMSlot>();
@@ -374,10 +384,10 @@ public class UserHandler {
         /*
          * Status Codes
          * 0 --> slots displayed
-         * 5 --> User not logged in
+         * -1 --> user not logged in
          */
-        if (isLoggedIn() == false) {
-            return 5;
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
         }
 
         LinkedHashMap<String, VPBooking> vpbookings = new LinkedHashMap<String, VPBooking>();
@@ -397,15 +407,15 @@ public class UserHandler {
          * Status Codes
          * 0 --> slot created
          * 1 --> invalid/old date time
-         * 5 --> User not logged in
+         * -1 --> user not logged in
          */
         LocalDateTime t = LocalDateTime.now();
         if (day.isBefore(t) == true) {
             return 1;
         }
 
-        if (isLoggedIn() == false) {
-            return 5;
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
         }
 
         String VPid = "VP" + Integer.toString(VPBookings.size());
@@ -419,14 +429,14 @@ public class UserHandler {
          * Status Codes
          * 1 --> Invalid Slot ID
          * 0 --> Request sent
-         * 5 --> User not logged in
+         * -1 --> user not logged in
          */
         if (VPBookings.get(id) == null) {
             return 1;
         }
 
-        if (isLoggedIn() == false) {
-            return 5;
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
         }
 
         String rID = "R" + Integer.toString(RequestsList.size());
@@ -442,7 +452,7 @@ public class UserHandler {
          * 1 --> invalid slot
          * 2 --> partner unavailable or does not exist
          * 3 --> not owner
-         * 5 --> User not logged in
+         * -1 --> user not logged in
          */
 
         if (VPBookings.get(slotID) == null) {
@@ -453,8 +463,8 @@ public class UserHandler {
             return 3;
         }
 
-        if (isLoggedIn() == false) {
-            return 5;
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
         }
 
         int isPartner = -1;
@@ -479,15 +489,15 @@ public class UserHandler {
          * 2 --> owner left slot. randomly assigned new owner
          * 3 --> not found in slot
          * 0 --> left slot
-         * 5 --> User not logged in
+         * -1 --> user not logged in
          */
 
         if (VPBookings.get(slotID) == null) {// vp slot not found
             return 1;
         }
 
-        if (isLoggedIn() == false) {
-            return 5;
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
         }
 
         if (VPBookings.get(slotID).getOwner() == currentUser) {// if owner change owner
@@ -518,7 +528,7 @@ public class UserHandler {
          * 0 --> slot deleted successfully
          * 1 --> invalid slot id
          * 2 --> not owner;
-         * 5 --> User not logged in
+         * -1 --> user not logged in
          */
 
         if (VPBookings.get(slotID) == null) {// slot not found
@@ -529,11 +539,87 @@ public class UserHandler {
             return 2;
         }
 
-        if (isLoggedIn() == false) {
-            return 5;
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
         }
 
         VPBookings.remove(slotID);
         return 0;
+    }
+
+    public int availCredit() {
+        /*
+         * Status Codes
+         * 1 --> not enough credits
+         * -1 --> user not logged in
+         * 0 --> credit availed
+         */
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
+        }
+        if (currentUser.getPoints() < 50) {
+            return 1;
+        }
+
+        currentUser.setPoints(currentUser.getPoints() - 50);
+        currentUser.setCredits(currentUser.getCredits() + 1);
+        return 0;
+    }
+
+    public int viewCredit() {
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
+        }
+        return currentUser.getCredits();
+    }
+
+    public int viewPoints() {
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
+        }
+        return currentUser.getPoints();
+    }
+
+    public int viewCms() {
+        if (isLoggedIn() == false || currentUser == null) {
+            return -1;
+        }
+        return currentUser.getCms();
+    }
+
+    public String viewWMStatus() {
+        return this.WMStatus;
+    }
+
+    public void displayLeaderBoard() {
+        // JNI Cpp Call
+    }
+
+    public void BackgroundTaskRunner() {
+        LocalDateTime now = LocalDateTime.now();
+        boolean isRunning = false;
+        for (String key : WMSlots.keySet()) {
+            if (WMSlots.get(key).getWMran() == false && now.isAfter(WMSlots.get(key).getEndTime())
+                    && WMSlots.get(key).getPointsDeducted() == false) {
+                if (WMSlots.get(key).getUser().equals(currentUser)) {
+                    currentUser.setPoints(currentUser.getPoints() - 10);
+                } else {
+                    Users.get(WMSlots.get(key).getUser().getEmailId())
+                            .setPoints(Users.get(WMSlots.get(key).getUser().getEmailId()).getPoints() - 10);
+                }
+                WMSlots.get(key).setPointsDeducted(true);
+            }
+
+            if (now.isAfter(WMSlots.get(key).getStartTime()) && now.isBefore(WMSlots.get(key).getEndTime())
+                    && WMSlots.get(key).getWMran() == true) {
+                isRunning = true;
+            }
+        }
+
+        if (isRunning == true) {
+            this.WMStatus = "WM is in use";
+        } else {
+            this.WMStatus = "WM is free to use";
+        }
     }
 }
