@@ -8,6 +8,8 @@ public class WMSlot {
 	private LocalDateTime endTime;
 	private int OTP;
 	private String slotId;
+	private boolean WMran;
+	private boolean pointsDeducted;
 
 	public WMSlot(User user, LocalDateTime startTime, LocalDateTime endTime, int OTP, String slotId) {
 		this.user = user;
@@ -15,6 +17,8 @@ public class WMSlot {
 		this.endTime = endTime;
 		this.OTP = OTP;
 		this.slotId = slotId;
+		this.WMran = false;
+		this.pointsDeducted = false;
 	}
 
 	public User getUser() {
@@ -55,5 +59,21 @@ public class WMSlot {
 
 	public void setSlotId(String slotId) {
 		this.slotId = slotId;
+	}
+
+	public boolean getWMran() {
+		return WMran;
+	}
+
+	public void setWMran(boolean wMran) {
+		WMran = wMran;
+	}
+
+	public boolean getPointsDeducted() {
+		return pointsDeducted;
+	}
+
+	public void setPointsDeducted(boolean pointsDeducted) {
+		this.pointsDeducted = pointsDeducted;
 	}
 }
