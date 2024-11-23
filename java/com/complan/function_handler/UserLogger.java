@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * REGISTER <name> <password> <mobile_number> <email-id>
  * CREATE_WMSLOT <date(dd-mm-yy)> <time(hh:mm)>
  * DELETE_WMSLOT <slot ID> <date(dd-mm-yy)> <time(hh:mm)>
- * GIVE_WMSLOT <slot ID> <to email-id> <date(dd-mm-yy)> <time(hh:mm)>
+ * ASK_WMSLOT <slot ID> <to email-id> <date(dd-mm-yy)> <time(hh:mm)>
  * RESPOND_REQUEST <requestID> <accept(y/n)> //types --> "VP Join Request" , "give WMSlot"
  * USE_WMSLOT <slot ID> <date(dd-mm-yy)> <time(hh:mm)> <otp>
  * DISPLAY_WMSLOTS <date(dd-mm-yy)> <display only your slots(y/n)> 
@@ -22,6 +22,12 @@ import java.util.regex.Pattern;
  * REMOVE_PARTNER <slotID> <partner email>
  * LEAVE_VPSLOT <slotID>
  * DELETE_VPSLOT <slotID>
+ * VIEW_WMSTATUS
+ * AVAIL_CREDIT
+ * VIEW_CREDITS
+ * VIEW_POINTS
+ * VIEW_CMS
+ * DISPLAY_LEADERBOARD
  * HELP
  * EXIT
  * RULES
@@ -35,6 +41,10 @@ public class UserLogger {
     String GREEN = "\u001B[32m";
     String YELLOW = "\u001B[93m";
     String BLUE = "\u001B[34m";
+    String BLACK = "\u001B[30m";
+    String GREENBG = "\u001B[102m";
+    String BLUEBG = "\u001B[104m";
+    String YELLOWBG = "\u001B[103m";
     String BOLD = "\u001B[1m";
 
     public UserLogger() {
@@ -112,14 +122,14 @@ public class UserLogger {
 		            int LOresponse = Handler.Logout();
 		            if (LOresponse == 0) {
 		                System.out.println(GREEN + "Logged out successfully..." + RESET);
-		            } else if (LOresponse == 5) {
+		            } else if (LOresponse == -1) {
 		                System.out.println(RED + "User is not logged in..." + RESET);
 		            }
 		        } else if (command.equals("REGISTER")) {// REGISTER
-		            if (commands.size() < 5) {
+		            /*if (commands.size() < 5) {
 		                System.out.println(RED + "Invalid Arguments.." + RESET);
 		                continue;
-		            }
+		            }*/
 		            int response = Handler.Register(commands.get(1), commands.get(2), commands.get(3), commands.get(4));
 
 		            if (response == 1) {
@@ -143,7 +153,7 @@ public class UserLogger {
 		            } else if (response == 2) {
 		                System.out.println(RED + "Timing not available" + RESET);
 		                continue;
-		            } else if (response == 5) {
+		            } else if (response == -1) {
 		                System.out.println(RED + "User is not logged in..." + RESET);
 		                continue;
 		            } 
@@ -162,11 +172,67 @@ public class UserLogger {
 		            } else if (response == 2) {
 		                System.out.println(YELLOW + "Slot deleted, but 10 points reduced..." + RESET);
 		                continue;
-		            } else if (response == 5) {
+		            } else if (response == -1) {
 		                System.out.println(RED + "User is not logged in..." + RESET);
 		                continue;
 		            }
-		        } else if (command.equals("GIVE_WMSLOT")) {
+		        } else if (command.equals("AVAIL_CREDIT")) {
+		        	int response = Handler.availCredit();
+		        	if (response == 0){
+		        		System.out.println(GREEN+"Credit availed successfully"+RESET);
+		        		continue;
+		        	} else if (response == 1) {
+		        		System.out.println(RED + "Insufficient points to avail credit..." + RESET)
+		        		continue;
+		        	} else if (response == -1) {
+		        		System.out.println(RED + "User is not logged in..." + RESET);
+		                continue;
+		        	}
+		        } else if (command.equals("VIEW_CREDITS")) {
+		        	int response = Handler.viewCredit();
+		        	if (response!=-1){
+		        		double credits = response;
+		        		System.out.println("+--------------------+");
+						System.out.println("|"+GREENBG+BLACK+BOLD+"  Your credits: " + String.format("%2.0f", credits) + "  "+RESET"|");
+						System.out.println("+--------------------+");
+		        		continue;
+		        	} else if (response == -1) {
+		        		System.out.println(RED + "User is not logged in..." + RESET);
+		                continue;
+		        	}
+		        } else if (command.equals("VIEW_POINTS")) {
+		        	int response = Handler.viewPoints();
+		        	if (response!=-1){
+		        		double points = response;
+		        		System.out.println("+--------------------+");
+						System.out.println("|"+BLUEBG+BLACK+BOLD+"  Your points: " + String.format("%3.0f", points) + "  "+RESET"|");
+						System.out.println("+--------------------+");
+		        		continue;
+		        	} else if (response == -1) {
+		        		System.out.println(RED + "User is not logged in..." + RESET);
+		                continue;
+		        	}
+		        } else if (command.equals("VIEW_CMS") {
+		        	int response = Handler.viewCms();
+		        	if (response!=-1){
+		        		double cms = response;
+		        		System.out.println("+--------------------+");
+						System.out.println("|"+YELLOWBG+BLACK+BOLD+"   Your Cms: " + String.format("%3.0f", points) + "    "+RESET"|");
+						System.out.println("+--------------------+");
+		        		continue;
+		        	} else if (response == -1) {
+		        		System.out.println(RED + "User is not logged in..." + RESET);
+		                continue;
+		        	}
+		        } else if (command.equals("VIEW_WMSTATUS")) {
+		        	String response = Handler.viewWMStatus();
+		        	if (response.equals("WM is in use")) {
+		        		System.out.println(RED + response + "..." + RESET);
+		        	}
+		        	else if (response.equls("WM is free to use")) {
+		        		System.out.println(GREEN + response + "!" + RESET);
+		        	}
+		        } else if (command.equals("ASK_WMSLOT")) {
 		            String slotId = commands.get(1);
 		            String to_email = commands.get(2);
 		            String date = commands.get(3);
@@ -182,7 +248,10 @@ public class UserLogger {
 		            } else if (response == 2) {
 		                System.out.println(RED + "User not found..." + RESET);
 		                continue;
-		            } else if (response == 5) {
+		            } else if (response == 3) {
+		            	System.out.println(RED + "Insufficient credits to ask for slot..." + RESET);
+		                continue;
+		            } else if (response == -1) {
 		                System.out.println(RED + "User is not logged in..." + RESET);
 		                continue;
 		            }
@@ -205,7 +274,7 @@ public class UserLogger {
 		            } else if (response == 4) {
 		                System.out.println(RED + "Insufficient credits to accept request..." + RESET);
 		                continue;
-		            } else if (response == 5) {
+		            } else if (response == -1) {
 		                System.out.println(RED + "User is not logged in..." + RESET);
 		                continue;
 		            }
@@ -231,7 +300,7 @@ public class UserLogger {
 		            } else if (response == 4) {
 		                System.out.println(RED + "Too late to start slot..." + RESET);
 		                continue;
-		            } else if (response == 5) {
+		            } else if (response == -1) {
 		                System.out.println(RED + "User is not logged in..." + RESET);
 		                continue;
 		            }
@@ -261,7 +330,7 @@ public class UserLogger {
 		        	} else if (response == 1) {
 		        	    System.out.println(RED + "invalid/old date time..." + RESET);
 		        	    continue;
-		        	} else if (response == 5) {
+		        	} else if (response == -1) {
 		                System.out.println(RED + "User is not logged in..." + RESET);
 		                continue;
 		            }
@@ -274,7 +343,7 @@ public class UserLogger {
 		        	} else if (response == 1) {
 		        	    System.out.println(RED + "Invalid Slot ID..." + RESET);
 		        	    continue;
-		        	} else if (response == 5) {
+		        	} else if (response == -1) {
 		                System.out.println(RED + "User is not logged in..." + RESET);
 		                continue;
 		            }
@@ -294,7 +363,7 @@ public class UserLogger {
 		            } else if (response == 3) {
 		                System.out.println(RED + "You are not an owner, you cannot remove a partner..." + RESET);
 		                continue;
-		            } else if (response == 5) {
+		            } else if (response == -1) {
 		                System.out.println(RED + "User is not logged in..." + RESET);
 		                continue;
 		            }
@@ -313,7 +382,7 @@ public class UserLogger {
 		            } else if (response == 3) {
 		                System.out.println(RED + "You are not present in the slot..." + RESET);
 		                continue;
-		            } else if (response == 5) {
+		            } else if (response == -1) {
 		                System.out.println(RED + "User is not logged in..." + RESET);
 		                continue;
 		            }
@@ -329,10 +398,12 @@ public class UserLogger {
 		        	} else if (response == 2) {
 		                System.out.println(YELLOW + "You are not an owner, you cannot delete this slot..." + RESET);
 		                continue;
-		            } else if (response == 5) {
+		            } else if (response == -1) {
 		                System.out.println(RED + "User is not logged in..." + RESET);
 		                continue;
 		            }
+		        } else if (command.equals("DISPLAY_LEADERBOARD")) {
+		        	Handler.displayLeaderBoard();
 		        } else if (command.equals("HELP")) {
 				    System.out.println(BOLD+"+----------------------------------------------------------------------------------------------+");
 				    System.out.println("|                                     *** COMMAND FORMAT ***                                   |"+RESET);
@@ -342,7 +413,7 @@ public class UserLogger {
 					System.out.println("| * REGISTER <name> <password> <mobile_number> <email-id>                                      |");
 					System.out.println("| * CREATE_WMSLOT <date(dd-mm-yy)> <time(hh:mm)>                                               |");
 					System.out.println("| * DELETE_WMSLOT <slot ID> <date(dd-mm-yy)> <time(hh:mm)>                                     |");
-					System.out.println("| * GIVE_WMSLOT <slot ID> <to email-id> <date(dd-mm-yy)> <time(hh:mm)>                         |");
+					System.out.println("| * ASK_WMSLOT <slot ID> <to email-id> <date(dd-mm-yy)> <time(hh:mm)>                          |");
 					System.out.println("| * RESPOND_REQUEST <requestID> <accept(y/n)> "+BLUE+"//types --> 1.VP Join Request, 2.give WMSlot"+RESET+"     |");
 					System.out.println("| * USE_WMSLOT <slot ID> <date(dd-mm-yy)> <time(hh:mm)> <otp>                                  |");
 					System.out.println("| * DISPLAY_WMSLOTS <date(dd-mm-yy)> <display only your slots(y/n)>                            |");
@@ -352,6 +423,12 @@ public class UserLogger {
 					System.out.println("| * REMOVE_PARTNER <slotID> <partner email>                                                    |");
 					System.out.println("| * LEAVE_VPSLOT <slotID>                                                                      |");
 					System.out.println("| * DELETE_VPSLOT <slotID>                                                                     |");
+					System.out.println("| * VIEW_WMSTATUS                                                                              |");
+ 					System.out.println("| * AVAIL_CREDIT                                                                               |");
+ 					System.out.println("| * VIEW_CREDITS                                                                               |");
+ 					System.out.println("| * VIEW_POINTS                                                                                |");
+					System.out.println("| * VIEW_CMS                                                                                   |");
+ 					System.out.println("| * DISPLAY_LEADERBOARD                                                                        |");
 					System.out.println("| * HELP                                                                                       |");
 					System.out.println("| * EXIT                                                                                       |");
 					System.out.println("| * RULES                                                                                      |");
