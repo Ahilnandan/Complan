@@ -14,6 +14,12 @@ public class UserHandler {
     private boolean isLoggedIn = false;
     private User currentUser;
 
+    static{
+        System.loadLibrary("DB_Access");
+    }
+
+    public static native String ReadFromDB(String filename);
+
     public UserHandler() {
         this.Users = new LinkedHashMap<String, User>();
         this.WMSlots = new LinkedHashMap<String, WMSlot>();
@@ -22,6 +28,58 @@ public class UserHandler {
         this.isLoggedIn = false;
         this.currentUser = null;
         /* DB acquire data and put in these Vectors logic */
+    }
+
+    // As a UserHandler object is needed for reading data, Reading data is done in separate method
+    // Read from "user.txt"
+    public void FetchUserData(){
+        //UserHandler uh = new UserHandler();
+        String allUserData = UserHandler.ReadFromDB("user.txt");
+        String[] data = allUserData.split("\n");
+        for (int i = 0;i < data.length(); i++){
+            String[] userDetails = data[i].split(";");
+            User user = new User(userDetails[0], userDetails[1], userDetails[2], userDetails[4], userDetails[3]);
+            Users.put(userDetails[1], user);
+        }
+    }
+
+    // Read from "WMSlots.txt"
+    public void FetchWMSlots(){
+        //UserHandler uh = new UserHandler();
+        String WMData = UserHandler.ReadFromDB("WMSlots.txt");
+        String[] data = WMData.split("\n");
+        for (int i = 0;i < data.length(); i++){
+            String[] slotDetails = data[i].split(";");
+            WMSlot slots = new WMSlot(slotDetails[0], slotDetails[1], slotDetails[2], slotDetails[3], slotDetails[4]);
+            WMSlots.put(slotDetails[4], slots);
+        }
+    }
+
+    // Read from "VPBookings.txt"
+    public void FetchVPBookings(){
+        //UserHandler uh = new UserHandler();
+        String vpb = UserHandler.ReadFromDB("VPBookings.txt");
+        String[] data = vpb.split("\n");
+        for (int i = 0;i < data.length(); i++){
+            String[] BookingDetails  = data[i].split(";");
+            VPBooking vpbooking = new VPBooking(Users.get(BookingDetails[0]), BookingDetails[1], BookingDetails[2], BookingDetails[3], BookingDetails[5]);
+            for (String i : BookingDetails[4].split("+")){
+                vpbooking.addPartner(Users.get(i));
+            }
+            VPBookings.put(BookingDetails[5], vpbooking);
+        }
+    }
+
+    // Read from "Requests.txt"
+    public void FetchRequests(){
+        //UserHandler uh = new UserHandler();
+        String ReqData = UserHandler.ReadFromDB("Requests.txt");
+        String[] data = ReqData.split("\n");
+        for (int i = 0;i < data.length(); i++){
+            String[] RequestData = data[i].split(";");
+            Request new_request = new Request(RequestData[0], RequestData[1], RequestData[2], RequestData[3], RequestData[6], RequestData[5]);
+            Requests.put(RequestData[6], new_request);
+        }
     }
 
     // GETTERS AND SETTERS
@@ -153,6 +211,8 @@ public class UserHandler {
         currentUser = null;
         return 0;
     }
+     
+    public native void WriteToDB(String userdata, String filename);
 
     public int Exit() {
         isLoggedIn = false;
@@ -160,8 +220,64 @@ public class UserHandler {
             Users.get(currentUser.getEmail()).copy(currentUser);
         }
         currentUser = null;
-        return 0;
         /* Write back to DB function */
+        // writing userdata to "user.txt"
+        String allUserData = "";
+        for (String i : Users.keySlot()){
+            allUserData = allUserData + Users.get(i).getName() + ";";
+            allUserData = allUserData + Users.get(i).getEmail() + ";";
+            allUserData = allUserData + Users.get(i).getMobileNumber() + ";";
+            allUserData = allUserData + Users.get(i).getUserID() + ";";
+            allUserData = allUserData + Users.get(i).getPassword() + ";";
+            allUserData = allUserData + Users.get(i).getAdmin() + ";";
+            allUserData = allUserData + Users.get(i).getCredits() + ";";
+            allUserData = allUserData + Users.get(i).getPoints() + ";\n";
+        }
+        UserHandler uh = new UserHandler();
+        uh.WriteToDB(allUserData, "user.txt");
+
+        // writing WMSlot information to "WMSlots.txt"
+        String WMData = "";
+        for (String i : WMSlots.keySlot()){
+            WMData = WMData + WMSlots.get(i).getUser().getEmail() + ";";
+            WMData = WMData + WMSlots.get(i).getStartTime().toString() + ";";
+            WMData = WMData + WMSlots.get(i).getEndTime().toString() + ";";
+            WMData = WMData + WMSlots.get(i).getOTP() + ";";
+            WMData = WMData + WMSlots.get(i).getSlotId() + ";";
+            WMData = WMData + WMSlots.get(i).getWMran() + ";";
+            WMData = WMData + WMSlots.get(i).getPointsDeducted() + ";\n";
+        }
+        uh.WriteToDB(WMData, "WMSlots.txt");
+
+        // writing VPBookings details to "VPBookings.txt"
+        String VPData = "";
+        for (String i : VPBookings.keySlot()){
+            VPData = VPData + VPBookings.get(i).getOwner().getEmail() + ";";
+            VPData = VPData + VPBookings.get(i).getDeparture().toString() + ";";
+            VPData = VPData + VPBookings.get(i).getFromLocation() + ";";
+            VPData = VPData + VPBookings.get(i).getToLocation() + ";";
+            int j = 0;
+            for (j; j < VPBookings.get(i).getPartners().size() - 1; j++){
+                VPData = VPData + VPBookings.get(i).getPartners().get(j).getEmail() + "+";
+            }
+            VPData = VPData + VPBookings.get(i).getPartners().get(j).getEmail() + ";";
+            VPData = VPData + VPBookings.get(i).getVPID() + ";\n";
+        }
+        uh.WriteToDB(VPData, "VPBookings.txt");
+
+        // writing Request information to "Requests.txt"
+        String RequestData = "";
+        for (String i : RequestsList.keySlot()){
+            RequestData = RequestData + RequestsList.get(i).getFrom() + ";";
+            RequestData = RequestData + RequestsList.get(i).getTo() + ";";
+            RequestData = RequestData + RequestsList.get(i).getType() + ";";
+            RequestData = RequestData + RequestsList.get(i).getTimeOfRequest() + "\";";
+            RequestData = RequestData + RequestsList.get(i).getAccept() + ";";
+            RequestData = RequestData + RequestsList.get(i).getSlotId() + ";";
+            RequestData = RequestData + RequestsList.get(i).getRequestId() + ";\n";
+        }
+        uh.WriteToDB(RequestData, "Requests.txt");
+        return 0;
     }
 
     public int createWMSlot(LocalDateTime start_Time) {
