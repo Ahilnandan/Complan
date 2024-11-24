@@ -16,6 +16,7 @@ public class UserHandler {
 
     static{
         System.loadLibrary("DB_Access");
+        System.loadLibrary("Display");
     }
 
     public static native String ReadFromDB(String filename);
