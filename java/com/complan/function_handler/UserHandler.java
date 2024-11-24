@@ -223,7 +223,7 @@ public class UserHandler {
         /* Write back to DB function */
         // writing userdata to "user.txt"
         String allUserData = "";
-        for (String i : Users.keySlot()){
+        for (String i : Users.keySet()){
             allUserData = allUserData + Users.get(i).getName() + ";";
             allUserData = allUserData + Users.get(i).getEmail() + ";";
             allUserData = allUserData + Users.get(i).getMobileNumber() + ";";
@@ -238,7 +238,7 @@ public class UserHandler {
 
         // writing WMSlot information to "WMSlots.txt"
         String WMData = "";
-        for (String i : WMSlots.keySlot()){
+        for (String i : WMSlots.keySet()){
             WMData = WMData + WMSlots.get(i).getUser().getEmail() + ";";
             WMData = WMData + WMSlots.get(i).getStartTime().toString() + ";";
             WMData = WMData + WMSlots.get(i).getEndTime().toString() + ";";
@@ -251,7 +251,7 @@ public class UserHandler {
 
         // writing VPBookings details to "VPBookings.txt"
         String VPData = "";
-        for (String i : VPBookings.keySlot()){
+        for (String i : VPBookings.keySet()){
             VPData = VPData + VPBookings.get(i).getOwner().getEmail() + ";";
             VPData = VPData + VPBookings.get(i).getDeparture().toString() + ";";
             VPData = VPData + VPBookings.get(i).getFromLocation() + ";";
@@ -468,6 +468,8 @@ public class UserHandler {
         return -1;
     }
 
+	public static native void WMview(String email, String data, int onlyme);
+
     public int displayAllSlotsOnDay(LocalDateTime day, boolean yourslot) {
         /*
          * -1 --> user not logged in
@@ -491,10 +493,28 @@ public class UserHandler {
                 }
             }
         }
-
+        
         // display slots jni code (Cpp)
+        
+        int v;
+        if (yourslot)
+        	v=1;
+        else
+        	v=0;
+        String data = "";
+        for (String i: allslots.keySet()) {
+        	if (data.length()==0)
+				data = data + allslots.get(i).getStartTime().toString() + ";" + allslots.get(i).getEndTime().toString() + ";" + i + ";" + allslots.get(i).getUser().getEmailId() + ";" + allslots.get(i).getUser().getName();
+			else
+				data = data + "\n" + allslots.get(i).getStartTime().toString() + ";" + allslots.get(i).getEndTime().toString() + ";" + i + ";" + allslots.get(i).getUser().getEmailId() + ";" + allslots.get(i).getUser().getName();
+		}
+		
+		UserHandler.WMview(currentUser.getEmail() ,data, v);
+        
         return 0;
     }
+
+	public static native void WPview(String data);
 
     public int viewVPSlotsOnDay(LocalDateTime day, String from, String to, boolean inSlot) {
         /*
@@ -510,12 +530,30 @@ public class UserHandler {
 
         for (String i : VPBookings.keySet()) {
             VPBooking vp = VPBookings.get(i);
-            if (vp.getDeparture() == day && vp.getFromLocation() == from && vp.getToLocation() == to) {
+            if (vp.getDeparture() == day && vp.getFromLocation() == from && vp.getToLocation() == to && (!inSlot || vp.PartnerInSlot(currentUser))) {
                 vpbookings.put(vp.getVPID(), vp);
             }
         }
-        return 0;
+        
         // display slots JNI Code
+        
+        int v;
+        if (inSlot)
+        	v=1;
+        else
+        	v=0;
+        String data = "";
+        for (String i: allslots.keySet()) {
+        	if (data.length()==0)
+				data = data + vpbookings.get(i).getDeparture().toString() + ";" + i + ";" + vpbookings.get(i).getOwner().getName() + ";" + vpbookings.get(i).getFromLocation() + ";" + vpbookings.get(i).getToLocation();
+			else
+				data = data + "\n" + vpbookings.get(i).getDeparture().toString() + ";" + i + ";" + vpbookings.get(i).getOwner().getName() + ";" + vpbookings.get(i).getFromLocation() + ";" + vpbookings.get(i).getToLocation();
+		}
+		
+		UserHandler.VPview(data);
+        
+        return 0;
+        
     }
 
     public int createSlot(LocalDateTime day, String from, String to) {
@@ -707,8 +745,18 @@ public class UserHandler {
         return this.WMStatus;
     }
 
+	public static native void LBview(String data);
+
     public void displayLeaderBoard() {
         // JNI Cpp Call
+        String data = "";
+        for (String i: Users.keySet()){
+        	if (data.length()==0)
+        		data = data + Users.get(i).getName() + ";" + Users.get(i).getCms();
+        	else
+        		data = data + "\n" + Users.get(i).getName() + ";" + Users.get(i).getCms();
+        }
+        UserHandler.LBview(data);
     }
 
     public void BackgroundTaskRunner() {
