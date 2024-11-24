@@ -49,6 +49,10 @@ public class UserLogger {
 
     public UserLogger() {
         Handler = new UserHandler();
+		Handler.FetchUserData();
+		Handler.FetchWMSlots();
+		Handler.FetchVPBookings();
+		Handler.FetchRequests();
     }
 
     public LocalDateTime parseDate(String date, String time) {
