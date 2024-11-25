@@ -10,6 +10,7 @@ public class User {
 	private String userId;
 	private String password;
 	private int cms;
+	private static int UserCount = 0;
 
 	public User(String name, String emailId, String MobileNumber, String password, String userId) {
 		this.name = name;
@@ -21,6 +22,7 @@ public class User {
 		this.credits = 12;
 		this.points = 0;
 		this.cms = 0;
+		UserCount++;
 	}
 
 	public User() {
@@ -143,5 +145,13 @@ public class User {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public static int getUserCount() {
+		return UserCount;
+	}
+
+	public static void setUserCount(int userCount) {
+		UserCount = userCount;
 	}
 }
