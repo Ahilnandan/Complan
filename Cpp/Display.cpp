@@ -3,23 +3,23 @@
 #include<jni.h>
 #define FMT_HEADER_ONLY
 #include <fmt/core.h>
-#include "UserHandler.h"
+#include "com_complan_function_handler_UserHandler.h"
 #include<cstdlib>
 
 using namespace std;
 
+string GREYBG = "\033[1;100m";
+string REDBG = "\033[1;101m";
+string GREENBG ="\033[1;102m";
+string YELLOWBG = "\033[1;103m";
+string BLUEBG ="\033[1;44m";
+string CYANBG = "\033[1;106m";
+string BLACK = "\033[1;30m";
+string BOLD = "\e[1m";
+string RESET = "\033[0m";
+
 class Display{
     public:
-		string GREYBG = "\033[1;100m";
-		string REDBG = "\033[1;101m";
-		string GREENBG ="\033[1;102m";
-		string YELLOWBG = "\033[1;103m";
-		string BLUEBG ="\033[1;44m";
-		string CYANBG = "\033[1;106m";
-		string BLACK = "\033[1;30m";
-		string BOLD = "\e[1m"
-		string RESET = "\033[0m";
-    	
     	
     	static vector<string> split(string S, char c='\n'){					//function to split a string into a vector of strings
     		vector<string> ans;
@@ -28,11 +28,11 @@ class Display{
     		int start = 0;
     		for (int i=0;i<S.size();i++){
     			if (S[i]==c){
-    				ans.push_back(S.substr(start,i-start);
+    				ans.push_back(S.substr(start,i-start));
     				start = i + 1;
     			}
     		}
-    		ans.push_back(S.substr(start, S.size()-start);
+    		ans.push_back(S.substr(start, S.size()-start));
     		return ans;
     	}
     	
@@ -57,7 +57,7 @@ class Display{
 		    		cout << fmt::format("|" + BOLD + "{:^50}" + RESET + "|", "Your Slots on " + slots[0][0].substr(0,10)) << endl;
 		    		for (int i=0;i<slots.size();i++){
 		    			cout << "+--------------------------------------------------+" << endl;
-		    			string myOut = "Slot from " + slots[i][0].substr(11,5) + " to " + slots[i][1].substr(11,5)
+		    			string myOut = "Slot from " + slots[i][0].substr(11,5) + " to " + slots[i][1].substr(11,5);
 		    			cout << fmt::format("|" + GREENBG + BLACK + "{:^50}" + RESET + "|", myOut) << endl;
 		    		}
 		    	}
@@ -70,7 +70,7 @@ class Display{
 		    		cout << fmt::format("|" + BOLD + "{:^50}" + RESET + "|", "All Slots on " + slots[0][0].substr(0,10)) << endl;
 		    		for (int i=0;i<slots.size();i++){
 		    			cout << "+--------------------------------------------------+" << endl;
-		    			string myOut = slots[i][4] + "'s slot from " + slots[i][0].substr(11,5) + " to " + slots[i][0].substr(11,5)
+		    			string myOut = slots[i][4] + "'s slot from " + slots[i][0].substr(11,5) + " to " + slots[i][0].substr(11,5);
 		    			if (email != slots[i][3]){
 		    				cout << fmt::format("|" + BLUEBG + "{:^50}" + RESET + "|", myOut) << endl;
 		    			}
@@ -134,13 +134,13 @@ class Display{
         	cout << "+------------------------------------------+-------+" << endl;
         	for (int i=users.size();i>=0;i--){
         		if (i==0)
-        			cout << fmt::format("|{:^41}🥇️|", users.second) << fmt::fromat("{:^7}|", to_string(users.first)) << endl;
+        			cout << fmt::format("|{:^41}🥇️|", users[i].second) << fmt::format("{:^7}|", to_string(users[i].first)) << endl;
         		else if (i==1)
-        			cout << fmt::format("|{:^41}🥈️|", users.second) << fmt::fromat("{:^7}|", to_string(users.first)) << endl;
+        			cout << fmt::format("|{:^41}🥈️|", users[i].second) << fmt::format("{:^7}|", to_string(users[i].first)) << endl;
         		else if (i==2)
-        			cout << fmt::format("|{:^41}🥉️|", users.second) << fmt::fromat("{:^7}|", to_string(users.first)) << endl;
+        			cout << fmt::format("|{:^41}🥉️|", users[i].second) << fmt::format("{:^7}|", to_string(users[i].first)) << endl;
         		else
-        			cout << fmt::format("|{:^42}|", users.second) << fmt::fromat("{:^7}|", to_string(users.first)) << endl;
+        			cout << fmt::format("|{:^42}|", users[i].second) << fmt::format("{:^7}|", to_string(users[i].first)) << endl;
         		cout << "+------------------------------------------+-------+" << endl;
         	}
         	cout << endl;
