@@ -10,6 +10,7 @@ public class VPBooking {
 	private String toLocation;
 	private Vector<User> Partners;
 	private String VPID;
+	private static int VPSlotCount = 0;
 
 	public VPBooking(User Owner, LocalDateTime departureTime, String fromLocation, String toLocation, String VPID) {
 		this.Owner = Owner;
@@ -18,10 +19,36 @@ public class VPBooking {
 		this.toLocation = toLocation;
 		this.VPID = VPID;
 		Partners = new Vector<User>();
+		VPSlotCount++;
+	}
+
+	public LocalDateTime getDepartureTime() {
+		return departureTime;
+	}
+
+	public void setPartners(Vector<User> partners) {
+		Partners = partners;
+	}
+
+	public static int getVPSlotCount() {
+		return VPSlotCount;
+	}
+
+	public static void setVPSlotCount(int vPSlotCount) {
+		VPSlotCount = vPSlotCount;
 	}
 
 	public void addPartner(User hi) {
 		Partners.add(hi);
+	}
+
+	public boolean PartnerInSlot(User partner) {
+		for (int i = 0; i < Partners.size(); i++) {
+			if (Partners.get(i).equals(partner)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void removePartner(User bye) {
