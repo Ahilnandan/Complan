@@ -105,10 +105,6 @@ public class UserLogger {
             String command = commands.get(0);
             try {
                 if (command.equals("LOGIN")) {// LOGIN
-                    if (commands.size() < 3) {
-                        System.out.println(RED + "Invalid Arguments.." + RESET);
-                        continue;
-                    }
                     int response = Handler.Login(commands.get(1), commands.get(2));
                     if (response == 0) {
                         System.out.println(GREEN + "Welcome " + Handler.getCurrentUser().getName() + RESET);
@@ -122,6 +118,9 @@ public class UserLogger {
                     } else if (response == 3) {
                         System.out.println(RED + "User already logged in.." + RESET);
                         continue;
+                    } else if (response == 4) {
+                    	System.out.println(RED + Handler.getCurrentUser().getName() + " is logged in..." + RESET);
+                    	continue;
                     }
                 } else if (command.equals("LOGOUT")) {// LOGOUT
                     int LOresponse = Handler.Logout();
@@ -613,6 +612,7 @@ public class UserLogger {
                     System.out.println();
                 } else if (command.equals("EXIT")) {
                     int response = Handler.Exit();
+                    return;
                 } else {
                     System.out.println(RED + "Invalid command format..." + RESET);
                     System.out.println("Please enter " + BOLD + "HELP" + RESET + " to see valid command formats");

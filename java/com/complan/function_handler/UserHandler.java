@@ -40,6 +40,8 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String allUserData = UserHandler.ReadFromDB("user.txt");
         String[] data = allUserData.split("\n");
+        if (data.length==1 && data[0].length()==0)
+        	return;
         for (int i = 0;i < data.length; i++){
             String[] userDetails = data[i].split(";");
             User user = new User(userDetails[0], userDetails[1], userDetails[2], userDetails[4], userDetails[3]);
@@ -52,6 +54,8 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String WMData = UserHandler.ReadFromDB("WMSlots.txt");
         String[] data = WMData.split("\n");
+        if (data.length==1 && data[0].length()==0)
+        	return;
         for (int i = 0;i < data.length; i++){
             String[] slotDetails = data[i].split(";");
             WMSlot slots = new WMSlot(Users.get(slotDetails[0]), LocalDateTime.parse(slotDetails[1]), LocalDateTime.parse(slotDetails[2]), Integer.parseInt(slotDetails[3]), slotDetails[4]);
@@ -64,6 +68,8 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String vpb = UserHandler.ReadFromDB("VPBookings.txt");
         String[] data = vpb.split("\n");
+        if (data.length==1 && data[0].length()==0)
+        	return;
         for (int i = 0;i < data.length; i++){
             String[] BookingDetails  = data[i].split(";");
             VPBooking vpbooking = new VPBooking(Users.get(BookingDetails[0]), LocalDateTime.parse(BookingDetails[1]), BookingDetails[2], BookingDetails[3], BookingDetails[5]);
@@ -79,6 +85,8 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String ReqData = UserHandler.ReadFromDB("Requests.txt");
         String[] data = ReqData.split("\n");
+        if (data.length==1 && data[0].length()==0)
+        	return;
         for (int i = 0;i < data.length; i++){
             String[] RequestData = data[i].split(";");
             Requests new_request = new Requests(RequestData[0],RequestData[1],RequestData[2],LocalDateTime.parse(RequestData[3]),RequestData[6],RequestData[5]);
@@ -185,11 +193,16 @@ public class UserHandler {
          * 1-->Incorrect password
          * 2-->User not found
          * 3 --> already logged in
+         * 4 --> some other user logged in
          */
 
-        User u = new User();
-        if (u.equals(currentUser) == false) {
+        //User u = new User();
+        if (currentUser!=null && email.equals(currentUser.getEmailId())) {
             return 3;
+        }
+        
+        if (currentUser!=null && !email.equals(currentUser.getEmailId())) {
+        	return 4;
         }
 
         if (Users.get(email) == null) {
@@ -216,7 +229,7 @@ public class UserHandler {
         return 0;
     }
      
-    public native void WriteToDB(String userdata, String filename);
+    public static native void WriteToDB(String userdata, String filename);
 
     public int Exit() {
         isLoggedIn = false;
@@ -237,8 +250,8 @@ public class UserHandler {
             allUserData = allUserData + Users.get(i).getCredits() + ";";
             allUserData = allUserData + Users.get(i).getPoints() + ";\n";
         }
-        UserHandler uh = new UserHandler();
-        uh.WriteToDB(allUserData, "user.txt");
+        //UserHandler uh = new UserHandler();
+        UserHandler.WriteToDB(allUserData, "user.txt");
 
         // writing WMSlot information to "WMSlots.txt"
         String WMData = "";
@@ -251,7 +264,7 @@ public class UserHandler {
             WMData = WMData + WMSlots.get(i).getWMran() + ";";
             WMData = WMData + WMSlots.get(i).getPointsDeducted() + ";\n";
         }
-        uh.WriteToDB(WMData, "WMSlots.txt");
+        UserHandler.WriteToDB(WMData, "WMSlots.txt");
 
         // writing VPBookings details to "VPBookings.txt"
         String VPData = "";
@@ -267,7 +280,7 @@ public class UserHandler {
             VPData = VPData + VPBookings.get(i).getPartners().get(j).getEmail() + ";";
             VPData = VPData + VPBookings.get(i).getVPID() + ";\n";
         }
-        uh.WriteToDB(VPData, "VPBookings.txt");
+        UserHandler.WriteToDB(VPData, "VPBookings.txt");
 
         // writing Request information to "Requests.txt"
         String RequestData = "";
@@ -280,7 +293,7 @@ public class UserHandler {
             RequestData = RequestData + RequestsList.get(i).getSlotId() + ";";
             RequestData = RequestData + RequestsList.get(i).getRequestId() + ";\n";
         }
-        uh.WriteToDB(RequestData, "Requests.txt");
+        UserHandler.WriteToDB(RequestData, "Requests.txt");
         return 0;
     }
 
@@ -518,7 +531,7 @@ public class UserHandler {
         return 0;
     }
 
-	public static native void VPview(String data);
+	public static native void VPview(String data, int onlyme);
 
     public int viewVPSlotsOnDay(LocalDateTime day, String from, String to, boolean inSlot) {
         /*
@@ -554,7 +567,7 @@ public class UserHandler {
 				data = data + "\n" + vpbookings.get(i).getDeparture().toString() + ";" + i + ";" + vpbookings.get(i).getOwner().getName() + ";" + vpbookings.get(i).getFromLocation() + ";" + vpbookings.get(i).getToLocation();
 		}
 		
-		UserHandler.VPview(data);
+		UserHandler.VPview(data, v);
         
         return 0;
         
