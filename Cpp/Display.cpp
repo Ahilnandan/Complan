@@ -70,7 +70,7 @@ class Display{
 		    		cout << fmt::format("|" + BOLD + "{:^50}" + RESET + "|", "All Slots on " + slots[0][0].substr(0,10)) << endl;
 		    		for (int i=0;i<slots.size();i++){
 		    			cout << "+--------------------------------------------------+" << endl;
-		    			string myOut = slots[i][4] + "'s slot from " + slots[i][0].substr(11,5) + " to " + slots[i][0].substr(11,5);
+		    			string myOut = slots[i][4] + "'s slot from " + slots[i][0].substr(11,5) + " to " + slots[i][1].substr(11,5);
 		    			if (email != slots[i][3]){
 		    				cout << fmt::format("|" + BLUEBG + "{:^50}" + RESET + "|", myOut) << endl;
 		    			}
@@ -117,6 +117,12 @@ class Display{
         
         
         static void view_Leaderboard(string data){						//function to view Leaderboard
+        	if (data.size()==0){
+        		cout << "+----------------------------------+" << endl;
+        		cout << "|"+ REDBG + BOLD + "   There are no users added yet   " + RESET + "|" << endl;
+        		cout << "+----------------------------------+" << endl;
+        		return;
+        	}
         	vector<string> raw = Display::split(data);
         	vector<pair<int,string>> users;
         	for (int i=0;i<raw.size();i++){
@@ -128,26 +134,34 @@ class Display{
         	}
         	sort(users.begin(), users.end());
         	cout << "+--------------------------------------------------+" << endl;
-        	cout << fmt::format("|\e[1m{^50}\e[0m|", "LEADERBOARD") << endl;
+        	cout << fmt::format("|\e[1m{:^50}\e[0m|", "LEADERBOARD") << endl;
         	cout << "+------------------------------------------+-------+" << endl;
         	cout << "|                   NAME                   |  CMS  |" << endl;
         	cout << "+------------------------------------------+-------+" << endl;
-        	for (int i=users.size();i>=0;i--){
-        		if (i==0)
-        			cout << fmt::format("|{:^41}🥇️|", users[i].second) << fmt::format("{:^7}|", to_string(users[i].first)) << endl;
-        		else if (i==1)
-        			cout << fmt::format("|{:^41}🥈️|", users[i].second) << fmt::format("{:^7}|", to_string(users[i].first)) << endl;
-        		else if (i==2)
-        			cout << fmt::format("|{:^41}🥉️|", users[i].second) << fmt::format("{:^7}|", to_string(users[i].first)) << endl;
-        		else
-        			cout << fmt::format("|{:^42}|", users[i].second) << fmt::format("{:^7}|", to_string(users[i].first)) << endl;
+        	for (int i=users.size()-1;i>=0;i--){
+        		if (users.size()-1-i==0){
+        			cout << fmt::format("|{:^41}🥇️|", users[i].second);
+        			cout << fmt::format("{:^7}|", to_string(users[i].first)) << endl;
+        		}
+        		else if (users.size()-1-i==1){
+        			cout << fmt::format("|{:^41}🥈️|", users[i].second);
+        			cout << fmt::format("{:^7}|", to_string(users[i].first)) << endl;
+        		}
+        		else if (users.size()-1-i==2){
+        			cout << fmt::format("|{:^41}🥉️|", users[i].second);
+        			cout << fmt::format("{:^7}|", to_string(users[i].first)) << endl;
+        		}
+        		else{
+        			cout << fmt::format("|{:^42}|", users[i].second);
+        			cout << fmt::format("{:^7}|", to_string(users[i].first)) << endl;
+        		}
         		cout << "+------------------------------------------+-------+" << endl;
         	}
         	cout << endl;
         }
 };
 
-extern "C" JNIEXPORT void JNICALL Java_UserHandler_WMview(JNIEnv *env, jobject thiz, jstring email, jstring data, jint onlyme){
+extern "C" JNIEXPORT void JNICALL Java_com_complan_function_1handler_UserHandler_WMview(JNIEnv *env, jclass thiz, jstring email, jstring data, jint onlyme){
     const char* nativeData = env -> GetStringUTFChars(data, NULL);
     const char* nativeEmail = env -> GetStringUTFChars(email, NULL);
     Display::view_WMSlots(string(nativeEmail), string(nativeData), onlyme);
@@ -155,13 +169,13 @@ extern "C" JNIEXPORT void JNICALL Java_UserHandler_WMview(JNIEnv *env, jobject t
     env -> ReleaseStringUTFChars(email, nativeEmail);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_UserHandler_VPview(JNIEnv *env, jobject thiz, jstring data, jint onlyme){
+extern "C" JNIEXPORT void JNICALL Java_com_complan_function_1handler_UserHandler_VPview(JNIEnv *env, jclass thiz, jstring data, jint onlyme){
     const char* nativeData = env -> GetStringUTFChars(data, NULL);
     Display::view_VPSlots(string(nativeData), onlyme);
     env -> ReleaseStringUTFChars(data, nativeData);
 }
 
-extern "C" JNIEXPORT void JNICALL Java_UserHandler_LBview(JNIEnv *env, jobject thiz, jstring data){
+extern "C" JNIEXPORT void JNICALL Java_com_complan_function_1handler_UserHandler_LBview(JNIEnv *env, jclass thiz, jstring data){
     const char* nativeData = env -> GetStringUTFChars(data, NULL);
     Display::view_Leaderboard( string(nativeData));
     env -> ReleaseStringUTFChars(data, nativeData);

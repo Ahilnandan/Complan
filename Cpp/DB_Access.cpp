@@ -30,7 +30,7 @@ class Access_DB{
         }
 };
 
-extern "C" JNIEXPORT void JNICALL Java_UserHandler_WriteToDB(JNIEnv *env, jobject thiz, jstring data,jstring filename){
+extern "C" JNIEXPORT void JNICALL Java_com_complan_function_1handler_UserHandler_WriteToDB(JNIEnv *env, jclass thiz, jstring data,jstring filename){
     const char* nativeData = env -> GetStringUTFChars(data, NULL);
     const char* nativeFilename =  env -> GetStringUTFChars(filename, NULL);
     Access_DB::Write( string(nativeData), string(nativeFilename));
@@ -38,7 +38,7 @@ extern "C" JNIEXPORT void JNICALL Java_UserHandler_WriteToDB(JNIEnv *env, jobjec
     env -> ReleaseStringUTFChars(filename, nativeFilename);
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_UserHandler_ReadFromDB(JNIEnv *env, jobject thiz, jstring filename){
+extern "C" JNIEXPORT jstring JNICALL Java_com_complan_function_1handler_UserHandler_ReadFromDB(JNIEnv *env, jclass thiz, jstring filename){
     const char* nativeFilename = env -> GetStringUTFChars(filename, NULL);
     string data = Access_DB::Read ( string(nativeFilename));
     env -> ReleaseStringUTFChars(filename, nativeFilename);
