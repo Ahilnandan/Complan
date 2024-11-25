@@ -10,6 +10,7 @@ public class WMSlot {
 	private String slotId;
 	private boolean WMran;
 	private boolean pointsDeducted;
+	private static int slotCount = 0;
 
 	public WMSlot(User user, LocalDateTime startTime, LocalDateTime endTime, int OTP, String slotId) {
 		this.user = user;
@@ -19,6 +20,7 @@ public class WMSlot {
 		this.slotId = slotId;
 		this.WMran = false;
 		this.pointsDeducted = false;
+		slotCount++;
 	}
 
 	public User getUser() {
@@ -75,5 +77,13 @@ public class WMSlot {
 
 	public void setPointsDeducted(boolean pointsDeducted) {
 		this.pointsDeducted = pointsDeducted;
+	}
+
+	public static int getSlotCount() {
+		return slotCount;
+	}
+
+	public static void setSlotCount(int slotCount) {
+		WMSlot.slotCount = slotCount;
 	}
 }
