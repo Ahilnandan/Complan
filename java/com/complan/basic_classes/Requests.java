@@ -10,6 +10,7 @@ public class Requests {
 	private boolean isAccepted = false;
 	private String SlotID;
 	private String requestId;
+	private static int RequestCount = 0;
 
 	public Requests(String from, String to, String type, LocalDateTime timeOfRequest, String requestId, String SlotID) {
 		this.from = from;
@@ -19,6 +20,32 @@ public class Requests {
 		this.requestId = requestId;
 		this.SlotID = SlotID;
 		this.isAccepted = false;
+		RequestCount++;
+
+	}
+
+	public boolean isAccepted() {
+		return isAccepted;
+	}
+
+	public void setAccepted(boolean isAccepted) {
+		this.isAccepted = isAccepted;
+	}
+
+	public String getSlotID() {
+		return SlotID;
+	}
+
+	public void setSlotID(String slotID) {
+		SlotID = slotID;
+	}
+
+	public static int getRequestCount() {
+		return RequestCount;
+	}
+
+	public static void setRequestCount(int requestCount) {
+		RequestCount = requestCount;
 	}
 
 	public String getFrom() {
