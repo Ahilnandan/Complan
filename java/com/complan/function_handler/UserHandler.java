@@ -3,7 +3,10 @@ package com.complan.function_handler;
 import java.time.LocalDateTime;
 //import java.util.Vector;
 import java.util.LinkedHashMap;
-import com.complan.basic_classes.*;
+import com.complan.basic_classes.User;
+import com.complan.basic_classes.WMSlot;
+import com.complan.basic_classes.VPBooking;
+import com.complan.basic_classes.Requests;
 
 public class UserHandler {
     private LinkedHashMap<String, User> Users;
@@ -37,7 +40,7 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String allUserData = UserHandler.ReadFromDB("user.txt");
         String[] data = allUserData.split("\n");
-        for (int i = 0;i < data.length(); i++){
+        for (int i = 0;i < data.length; i++){
             String[] userDetails = data[i].split(";");
             User user = new User(userDetails[0], userDetails[1], userDetails[2], userDetails[4], userDetails[3]);
             Users.put(userDetails[1], user);
@@ -49,9 +52,9 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String WMData = UserHandler.ReadFromDB("WMSlots.txt");
         String[] data = WMData.split("\n");
-        for (int i = 0;i < data.length(); i++){
+        for (int i = 0;i < data.length; i++){
             String[] slotDetails = data[i].split(";");
-            WMSlot slots = new WMSlot(slotDetails[0], slotDetails[1], slotDetails[2], slotDetails[3], slotDetails[4]);
+            WMSlot slots = new WMSlot(Users.get(slotDetails[0]), LocalDateTime.parse(slotDetails[1]), LocalDateTime.parse(slotDetails[2]), Integer.parseInt(slotDetails[3]), slotDetails[4]);
             WMSlots.put(slotDetails[4], slots);
         }
     }
@@ -61,11 +64,11 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String vpb = UserHandler.ReadFromDB("VPBookings.txt");
         String[] data = vpb.split("\n");
-        for (int i = 0;i < data.length(); i++){
+        for (int i = 0;i < data.length; i++){
             String[] BookingDetails  = data[i].split(";");
-            VPBooking vpbooking = new VPBooking(Users.get(BookingDetails[0]), BookingDetails[1], BookingDetails[2], BookingDetails[3], BookingDetails[5]);
-            for (String i : BookingDetails[4].split("+")){
-                vpbooking.addPartner(Users.get(i));
+            VPBooking vpbooking = new VPBooking(Users.get(BookingDetails[0]), LocalDateTime.parse(BookingDetails[1]), BookingDetails[2], BookingDetails[3], BookingDetails[5]);
+            for (String j : BookingDetails[4].split("+")){
+                vpbooking.addPartner(Users.get(j));
             }
             VPBookings.put(BookingDetails[5], vpbooking);
         }
@@ -76,10 +79,10 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String ReqData = UserHandler.ReadFromDB("Requests.txt");
         String[] data = ReqData.split("\n");
-        for (int i = 0;i < data.length(); i++){
+        for (int i = 0;i < data.length; i++){
             String[] RequestData = data[i].split(";");
-            Request new_request = new Request(RequestData[0], RequestData[1], RequestData[2], RequestData[3], RequestData[6], RequestData[5]);
-            Requests.put(RequestData[6], new_request);
+            Requests new_request = new Requests(RequestData[0],RequestData[1],RequestData[2],LocalDateTime.parse(RequestData[3]),RequestData[6],RequestData[5]);
+            RequestsList.put(RequestData[6], new_request);
         }
     }
 
@@ -258,7 +261,7 @@ public class UserHandler {
             VPData = VPData + VPBookings.get(i).getFromLocation() + ";";
             VPData = VPData + VPBookings.get(i).getToLocation() + ";";
             int j = 0;
-            for (j; j < VPBookings.get(i).getPartners().size() - 1; j++){
+            for (j=0; j < VPBookings.get(i).getPartners().size() - 1; j++){
                 VPData = VPData + VPBookings.get(i).getPartners().get(j).getEmail() + "+";
             }
             VPData = VPData + VPBookings.get(i).getPartners().get(j).getEmail() + ";";
@@ -268,7 +271,7 @@ public class UserHandler {
 
         // writing Request information to "Requests.txt"
         String RequestData = "";
-        for (String i : RequestsList.keySlot()){
+        for (String i : RequestsList.keySet()){
             RequestData = RequestData + RequestsList.get(i).getFrom() + ";";
             RequestData = RequestData + RequestsList.get(i).getTo() + ";";
             RequestData = RequestData + RequestsList.get(i).getType() + ";";
@@ -515,7 +518,7 @@ public class UserHandler {
         return 0;
     }
 
-	public static native void WPview(String data);
+	public static native void VPview(String data);
 
     public int viewVPSlotsOnDay(LocalDateTime day, String from, String to, boolean inSlot) {
         /*
@@ -544,7 +547,7 @@ public class UserHandler {
         else
         	v=0;
         String data = "";
-        for (String i: allslots.keySet()) {
+        for (String i: vpbookings.keySet()) {
         	if (data.length()==0)
 				data = data + vpbookings.get(i).getDeparture().toString() + ";" + i + ";" + vpbookings.get(i).getOwner().getName() + ";" + vpbookings.get(i).getFromLocation() + ";" + vpbookings.get(i).getToLocation();
 			else
