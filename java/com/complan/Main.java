@@ -7,8 +7,6 @@ public class Main {
     public static void main(String[] args) {
         UserLogger UL = new UserLogger();
         Scanner sc = new Scanner(System.in);
-        while (true) {
-            UL.get_executeCommands(sc);
-        }
+        UL.get_executeCommands(sc);
     }
 }
