@@ -40,9 +40,10 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String allUserData = UserHandler.ReadFromDB("user.txt");
         String[] data = allUserData.split("\n");
-        if (data.length==1 && data[0].length()==0)
+        User.setUserCount(Integer.parseInt(data[0]));
+        if (data.length==1)
         	return;
-        for (int i = 0;i < data.length; i++){
+        for (int i = 1;i < data.length; i++){
             String[] userDetails = data[i].split(";");
             User user = new User(userDetails[0], userDetails[1], userDetails[2], userDetails[4], userDetails[3]);
             Users.put(userDetails[1], user);
@@ -54,9 +55,10 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String WMData = UserHandler.ReadFromDB("WMSlots.txt");
         String[] data = WMData.split("\n");
-        if (data.length==1 && data[0].length()==0)
+        WMSlot.setSlotCount(Integer.parseInt(data[0]));
+        if (data.length==1)
         	return;
-        for (int i = 0;i < data.length; i++){
+        for (int i = 1;i < data.length; i++){
             String[] slotDetails = data[i].split(";");
             WMSlot slots = new WMSlot(Users.get(slotDetails[0]), LocalDateTime.parse(slotDetails[1]), LocalDateTime.parse(slotDetails[2]), Integer.parseInt(slotDetails[3]), slotDetails[4]);
             WMSlots.put(slotDetails[4], slots);
@@ -68,9 +70,10 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String vpb = UserHandler.ReadFromDB("VPBookings.txt");
         String[] data = vpb.split("\n");
-        if (data.length==1 && data[0].length()==0)
+        VPBooking.setVPSlotCount(Integer.parseInt(data[0]));
+        if (data.length==1)
         	return;
-        for (int i = 0;i < data.length; i++){
+        for (int i = 1;i < data.length; i++){
             String[] BookingDetails  = data[i].split(";");
             VPBooking vpbooking = new VPBooking(Users.get(BookingDetails[0]), LocalDateTime.parse(BookingDetails[1]), BookingDetails[2], BookingDetails[3], BookingDetails[5]);
             for (String j : BookingDetails[4].split("+")){
@@ -85,9 +88,10 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String ReqData = UserHandler.ReadFromDB("Requests.txt");
         String[] data = ReqData.split("\n");
-        if (data.length==1 && data[0].length()==0)
+        Requests.setRequestCount(Integer.parseInt(data[0]));
+        if (data.length==1)
         	return;
-        for (int i = 0;i < data.length; i++){
+        for (int i = 1;i < data.length; i++){
             String[] RequestData = data[i].split(";");
             Requests new_request = new Requests(RequestData[0],RequestData[1],RequestData[2],LocalDateTime.parse(RequestData[3]),RequestData[6],RequestData[5]);
             RequestsList.put(RequestData[6], new_request);
@@ -240,6 +244,7 @@ public class UserHandler {
         /* Write back to DB function */
         // writing userdata to "user.txt"
         String allUserData = "";
+        allUserData = allUserData + User.getUserCount() + "\n";
         for (String i : Users.keySet()){
             allUserData = allUserData + Users.get(i).getName() + ";";
             allUserData = allUserData + Users.get(i).getEmail() + ";";
@@ -255,6 +260,7 @@ public class UserHandler {
 
         // writing WMSlot information to "WMSlots.txt"
         String WMData = "";
+        WMData = WMData + WMSlot.getSlotCount() + "\n";
         for (String i : WMSlots.keySet()){
             WMData = WMData + WMSlots.get(i).getUser().getEmail() + ";";
             WMData = WMData + WMSlots.get(i).getStartTime().toString() + ";";
@@ -268,6 +274,7 @@ public class UserHandler {
 
         // writing VPBookings details to "VPBookings.txt"
         String VPData = "";
+        VPData = VPData + VPBooking.getVPSlotCount() + "\n";
         for (String i : VPBookings.keySet()){
             VPData = VPData + VPBookings.get(i).getOwner().getEmail() + ";";
             VPData = VPData + VPBookings.get(i).getDeparture().toString() + ";";
@@ -284,6 +291,7 @@ public class UserHandler {
 
         // writing Request information to "Requests.txt"
         String RequestData = "";
+        RequestData = RequestData + Requests.getRequestCount() + "\n";
         for (String i : RequestsList.keySet()){
             RequestData = RequestData + RequestsList.get(i).getFrom() + ";";
             RequestData = RequestData + RequestsList.get(i).getTo() + ";";
@@ -330,7 +338,8 @@ public class UserHandler {
             }
         }
 
-        String WMid = "WM" + Integer.toString(WMSlots.size());
+        String WMid = "WM" + Integer.toString(WMSlot.getSlotCount());
+        WMSlot.setSlotCount(WMSlot.getSlotCount()+1);
         WMSlot wmslot = new WMSlot(currentUser, start_Time, end_Time, generateOTP(4), WMid);
         WMSlots.put(WMid, wmslot);
         return 0;
@@ -394,7 +403,8 @@ public class UserHandler {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        String Rid = "R" + Integer.toString(RequestsList.size());
+        String Rid = "R" + Integer.toString(Requests.getRequestCount());
+        Requests.setRequestCount(Requests.getRequestCount()+1);
         Requests request = new Requests(currentUser.getEmail(), to_email, "ask WMSlot", now, Rid,
                 slotID);
         RequestsList.put(Rid, request);
@@ -589,7 +599,8 @@ public class UserHandler {
             return -1;
         }
 
-        String VPid = "VP" + Integer.toString(VPBookings.size());
+        String VPid = "VP" + Integer.toString(VPBooking.getVPSlotCount());
+        VPBooking.setVPSlotCount(VPBooking.getVPSlotCount()+1);
         VPBooking vp = new VPBooking(currentUser, day, from, to, VPid);
         VPBookings.put(VPid, vp);
         return 0;
@@ -610,7 +621,8 @@ public class UserHandler {
             return -1;
         }
 
-        String rID = "R" + Integer.toString(RequestsList.size());
+        String rID = "R" + Integer.toString(Requests.getRequestCount());
+        Requests.setRequestCount(Requests.getRequestCount()+1);
         Requests r = new Requests(currentUser.getName(), VPBookings.get(id).getOwner().getName(), "VP Join Request",
                 LocalDateTime.now(), rID, id);
         RequestsList.put(rID, r);
