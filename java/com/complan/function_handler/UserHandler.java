@@ -47,7 +47,7 @@ public class UserHandler {
         User.setUserCount(Integer.parseInt(data[0]));
         for (int i = 1;i < data.length; i++){
             String[] userDetails = data[i].split(";");
-            User user = new User(userDetails[0], userDetails[1], userDetails[2], userDetails[4], userDetails[3]);
+            User user = new User(userDetails[0], userDetails[1], Integer.parseInt(userDetails[2]), userDetails[4], userDetails[3]);
             Users.put(userDetails[1], user);
         }
     }
@@ -181,7 +181,7 @@ public class UserHandler {
         return OTP;
     }
 
-    public int Register(String name, String password, String MobileNumber, String emailID) {
+    public int Register(String name, String password, long MobileNumber, String emailID) {
         /*
          * Status Code
          * 1 --> User already exists

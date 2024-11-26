@@ -5,14 +5,14 @@ public class User {
 	private int credits;
 	private int points;
 	private String emailId;
-	private String MobileNumber;
+	private long MobileNumber;
 	private boolean isAdmin;
 	private String userId;
 	private String password;
 	private int cms;
 	private static int UserCount = 0;
 
-	public User(String name, String emailId, String MobileNumber, String password, String userId) {
+	public User(String name, String emailId,long MobileNumber, String password, String userId) {
 		this.name = name;
 		this.emailId = emailId;
 		this.MobileNumber = MobileNumber;
@@ -29,7 +29,7 @@ public class User {
 
 	}
 
-	public User(String name, String emailId, String MobileNumber, String userId, boolean isAdmin) {
+	public User(String name, String emailId, long MobileNumber, String userId, boolean isAdmin) {
 		this.name = name;
 		this.emailId = emailId;
 		this.MobileNumber = MobileNumber;
@@ -103,7 +103,7 @@ public class User {
 		return emailId;
 	}
 
-	public String getMobileNumber() {
+	public long getMobileNumber() {
 		return MobileNumber;
 	}
 
@@ -135,7 +135,7 @@ public class User {
 		this.emailId = emailId;
 	}
 
-	public void setMobileNumber(String MobileNumber) {
+	public void setMobileNumber(long MobileNumber) {
 		this.MobileNumber = MobileNumber;
 	}
 

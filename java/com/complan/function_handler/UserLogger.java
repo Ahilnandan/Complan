@@ -136,7 +136,7 @@ public class UserLogger {
                      * continue;
                      * }
                      */
-                    int response = Handler.Register(commands.get(1), commands.get(2), commands.get(3), commands.get(4));
+                    int response = Handler.Register(commands.get(1), commands.get(2), Integer.parseInt(commands.get(3)), commands.get(4));
 
                     if (response == 1) {
                         System.out.println(RED + "User already exists..." + RESET);
