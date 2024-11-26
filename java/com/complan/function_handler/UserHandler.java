@@ -40,9 +40,11 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String allUserData = UserHandler.ReadFromDB("user.txt");
         String[] data = allUserData.split("\n");
-        User.setUserCount(Integer.parseInt(data[0]));
-        if (data.length==1)
+        if (data.length == 1 && data[0].length() == 0){
+        	User.setUserCount(0);
         	return;
+        }
+        User.setUserCount(Integer.parseInt(data[0]));
         for (int i = 1;i < data.length; i++){
             String[] userDetails = data[i].split(";");
             User user = new User(userDetails[0], userDetails[1], userDetails[2], userDetails[4], userDetails[3]);
@@ -55,9 +57,11 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String WMData = UserHandler.ReadFromDB("WMSlots.txt");
         String[] data = WMData.split("\n");
-        WMSlot.setSlotCount(Integer.parseInt(data[0]));
-        if (data.length==1)
+        if (data.length == 1 && data[0].length() == 0){
+        	WMSlot.setSlotCount(0);
         	return;
+        }
+        WMSlot.setSlotCount(Integer.parseInt(data[0]));
         for (int i = 1;i < data.length; i++){
             String[] slotDetails = data[i].split(";");
             WMSlot slots = new WMSlot(Users.get(slotDetails[0]), LocalDateTime.parse(slotDetails[1]), LocalDateTime.parse(slotDetails[2]), Integer.parseInt(slotDetails[3]), slotDetails[4]);
@@ -70,9 +74,11 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String vpb = UserHandler.ReadFromDB("VPBookings.txt");
         String[] data = vpb.split("\n");
-        VPBooking.setVPSlotCount(Integer.parseInt(data[0]));
-        if (data.length==1)
+        if (data.length == 1 && data[0].length() == 0){
+        	VPBooking.setVPSlotCount(0);
         	return;
+        }
+        VPBooking.setVPSlotCount(Integer.parseInt(data[0]));
         for (int i = 1;i < data.length; i++){
             String[] BookingDetails  = data[i].split(";");
             VPBooking vpbooking = new VPBooking(Users.get(BookingDetails[0]), LocalDateTime.parse(BookingDetails[1]), BookingDetails[2], BookingDetails[3], BookingDetails[5]);
@@ -88,9 +94,11 @@ public class UserHandler {
         //UserHandler uh = new UserHandler();
         String ReqData = UserHandler.ReadFromDB("Requests.txt");
         String[] data = ReqData.split("\n");
-        Requests.setRequestCount(Integer.parseInt(data[0]));
-        if (data.length==1)
+        if (data.length == 1 && data[0].length() == 0){
+        	Requests.setRequestCount(0);
         	return;
+        }
+        Requests.setRequestCount(Integer.parseInt(data[0]));
         for (int i = 1;i < data.length; i++){
             String[] RequestData = data[i].split(";");
             Requests new_request = new Requests(RequestData[0],RequestData[1],RequestData[2],LocalDateTime.parse(RequestData[3]),RequestData[6],RequestData[5]);
