@@ -973,10 +973,10 @@ public class UserHandler {
                     }
                     data = data + RequestsList.get(i).getType()+";";
                     data = data + RequestsList.get(i).getSlotID()+";";
-                    if(RequestsList.get(i).getSlotID().charAt(1) == 'W'){
+                    if(RequestsList.get(i).getSlotID().charAt(0) == 'W'){
                         data = data + WMSlots.get(RequestsList.get(i).getSlotID()).getStartTime().toString();
                     }
-                    else if(RequestsList.get(i).getSlotID().charAt(1) == 'V'){
+                    else if(RequestsList.get(i).getSlotID().charAt(0) == 'V'){
                         data = data + VPBookings.get(RequestsList.get(i).getSlotID()).getDeparture().toString();
                     }
                 }
