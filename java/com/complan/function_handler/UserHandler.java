@@ -211,12 +211,12 @@ public class UserHandler {
          * 3 --> Create more difficult password
          * 4 --> already logged in
          */
-        if (currentUser != null ) {
-            return 4;
-        }
-
         if (Users.get(emailID) != null) {
             return 1;
+        }
+        
+        if (currentUser != null ) {
+            return 4;
         }
 
         if (emailID.contains("@") == false) {
