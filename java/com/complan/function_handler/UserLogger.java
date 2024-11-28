@@ -615,8 +615,6 @@ public class UserLogger {
                             "|  -> Once accepted by the pool owneer, the user is added to the pool                                               |");
                     System.out.println(
                             "|                                                                                                                   |");
-                    System.out.println(
-                            "|                                                                                                                   |");
                     System.out.println("| " + YELLOW + BOLD
                             + "2. Multiple Pools                                                                                                 "
                             + RESET + "|");
@@ -649,7 +647,7 @@ public class UserLogger {
                     System.out.println(
                             "|  -> Rankings are based on each user's total points including those exchanged for credits                          |");
                     System.out.println(
-                            "|  -> Pointes deducted due to exits from vehicle pool deletion of washing machine slot will not be included         |");
+                            "|  -> Points deducted due to deletion of washing machine slot will also be deducted in the total leaderboard points |");
                     System.out.println(
                             "|                                                                                                                   |");
                     System.out.println("| " + YELLOW + BOLD
