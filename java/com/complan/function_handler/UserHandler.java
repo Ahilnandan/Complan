@@ -950,7 +950,14 @@ public class UserHandler {
                     } else {
                         data = data + "No;";
                     }
-                    data = data + RequestsList.get(i).getType();
+                    data = data + RequestsList.get(i).getType()+";";
+                    data = data + RequestsList.get(i).getSlotID()+";";
+                    if(RequestsList.get(i).getSlotID().charAt(1) == 'W'){
+                        data = data + WMSlots.get(RequestsList.get(i).getSlotID()).getStartTime().toString();
+                    }
+                    else if(RequestsList.get(i).getSlotID().charAt(1) == 'V'){
+                        data = data + VPBookings.get(RequestsList.get(i).getSlotID()).getDeparture().toString();
+                    }
                 } else {
                     data = data + "\n" + RequestsList.get(i).getFrom() + ";" + RequestsList.get(i).getTo() + ";"
                             + RequestsList.get(i).getRequestId() + ";";
