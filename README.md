@@ -106,6 +106,7 @@ Start the CLI application
 ![Help](/docs/Help.jpeg)
 ![WMSlots](/docs/WMSlots.jpeg)
 ![VPSlots](/docs/VPSlots.png)
+![Requests](/docs/Requests.jpeg)
 ![Leaderboard](/docs/Leaderboard.jpeg)
 ![Profile](/docs/Profile.jpeg)
 ![Rules](/docs/Rules.jpeg)
