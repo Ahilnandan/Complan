@@ -484,13 +484,13 @@ public class UserLogger {
                     System.out.println(
                             "| * CREATE_WMSLOT <date(dd-mm-yy)> <time(hh:mm)>                                               |");
                     System.out.println(
-                            "| * DELETE_WMSLOT <slot ID> <password>                                                               |");
+                            "| * DELETE_WMSLOT <slot ID> <password>                                                         |");
                     System.out.println(
                             "| * ASK_WMSLOT <slot ID>                                                                       |");
                     System.out.println(
                             "| * RESPOND_REQUEST <requestID> <accept(y/n)>                                                  |");
                     System.out.println(
-                            "| * DISPLAY_REQUESTS                                                                              |");
+                            "| * DISPLAY_REQUESTS                                                                           |");
                     System.out.println(
                             "| * USE_WMSLOT <slot ID>  <otp>                                                                |");
                     System.out.println(
@@ -502,23 +502,23 @@ public class UserLogger {
                     System.out.println(
                             "| * JOIN_VPSLOT <slotID>                                                                       |");
                     System.out.println(
-                            "| * REMOVE_PARTNER <slotID> <partner email>  <password>                                              |");
+                            "| * REMOVE_PARTNER <slotID> <partner email>  <password>                                        |");
                     System.out.println(
-                            "| * LEAVE_VPSLOT <slotID> <password>                                                          |");
+                            "| * LEAVE_VPSLOT <slotID> <password>                                                           |");
                     System.out.println(
-                            "| * DELETE_VPSLOT <slotID> <password>                                                                    |");
+                            "| * DELETE_VPSLOT <slotID> <password>                                                          |");
                     System.out.println(
-                            "| * DISPLAY_WMSTATUS                                                                              |");
+                            "| * DISPLAY_WMSTATUS                                                                           |");
                     System.out.println(
-                            "| * AVAIL_CREDIT <password>                                                                             |");
+                            "| * AVAIL_CREDIT <password>                                                                    |");
                     System.out.println(
-                            "| * DISPLAY_PROFILE                                                                               |");
+                            "| * DISPLAY_PROFILE                                                                            |");
                     System.out.println(
-                            "| * DISPLAY_CREDITS                                                                               |");
+                            "| * DISPLAY_CREDITS                                                                            |");
                     System.out.println(
-                            "| * DISPLAY_POINTS                                                                                |");
+                            "| * DISPLAY_POINTS                                                                             |");
                     System.out.println(
-                            "| * DISPLAY_CMS                                                                                   |");
+                            "| * DISPLAY_CMS                                                                                |");
                     System.out.println(
                             "| * DISPLAY_LEADERBOARD                                                                        |");
                     System.out.println(
