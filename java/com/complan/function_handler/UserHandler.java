@@ -964,7 +964,14 @@ public class UserHandler {
                     } else {
                         data = data + "No;";
                     }
-                    data = data + RequestsList.get(i).getType();
+                    data = data + RequestsList.get(i).getType()+";";
+                    data = data + RequestsList.get(i).getSlotID()+";";
+                    if(RequestsList.get(i).getSlotID().charAt(1) == 'W'){
+                        data = data + WMSlots.get(Requests.get(i).getSlotID()).getStartTime();
+                    }
+                    else if(RequestsList.get(i).getSlotID().charAt(1) == 'V'){
+                        data = data + VPSlots.get(RequestsList.get(i).getSlotID()).getDeparture();
+                    }
                 }
             }
         }
