@@ -155,6 +155,10 @@ public class UserLogger {
                         System.out.println(RED + "Password should be atleast 9 charecters long..." + RESET);
                         continue;
                     }
+                    else if(response==4){
+                        System.out.println(RED +"User already logged in"+RESET);
+                        continue;
+                    }
                 } else if (command.equals("CREATE_WMSLOT")) {
                     String date = commands.get(1);
                     String time = commands.get(2);
