@@ -211,7 +211,7 @@ public class UserHandler {
          * 3 --> Create more difficult password
          * 4 --> already logged in
          */
-        if (currentUser != null && emailID.equals(currentUser.getEmailId())) {
+        if (currentUser != null ) {
             return 4;
         }
 
