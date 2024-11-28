@@ -615,24 +615,17 @@ public class UserLogger {
                             "|  -> Once accepted by the pool owneer, the user is added to the pool                                               |");
                     System.out.println(
                             "|                                                                                                                   |");
-                    System.out.println("| " + YELLOW + BOLD
-                            + "2. Leaving a Pool                                                                                                 "
-                            + RESET + "|");
-                    System.out.println(
-                            "|  -> Users can leave the pool, but must do so atleast 2 hours prior to departure                                   |");
-                    System.out.println(
-                            "|  -> If a user leaves a pool less than 2 hours before departure, 20 points will be deducted                        |");
                     System.out.println(
                             "|                                                                                                                   |");
                     System.out.println("| " + YELLOW + BOLD
-                            + "3. Multiple Pools                                                                                                 "
+                            + "2. Multiple Pools                                                                                                 "
                             + RESET + "|");
                     System.out.println(
                             "|  -> Users are allowed to join multiple pools                                                                      |");
                     System.out.println(
                             "|                                                                                                                   |");
                     System.out.println("| " + YELLOW + BOLD
-                            + "4. Points                                                                                                         "
+                            + "3. Points                                                                                                         "
                             + RESET + "|");
                     System.out.println(
                             "|  -> No points are awarded for participating in vehicle pooling                                                    |");
