@@ -211,12 +211,12 @@ public class UserHandler {
          * 3 --> Create more difficult password
          * 4 --> already logged in
          */
-        if (currentUser != null && emailID.equals(currentUser.getEmailId())) {
-            return 4;
-        }
-
         if (Users.get(emailID) != null) {
             return 1;
+        }
+        
+        if (currentUser != null ) {
+            return 4;
         }
 
         if (emailID.contains("@") == false) {
@@ -950,7 +950,14 @@ public class UserHandler {
                     } else {
                         data = data + "No;";
                     }
-                    data = data + RequestsList.get(i).getType();
+                    data = data + RequestsList.get(i).getType()+";";
+                    data = data + RequestsList.get(i).getSlotID()+";";
+                    if(RequestsList.get(i).getSlotID().charAt(0) == 'W'){
+                        data = data + WMSlots.get(RequestsList.get(i).getSlotID()).getStartTime().toString();
+                    }
+                    else if(RequestsList.get(i).getSlotID().charAt(0) == 'V'){
+                        data = data + VPBookings.get(RequestsList.get(i).getSlotID()).getDeparture().toString();
+                    }
                 } else {
                     data = data + "\n" + RequestsList.get(i).getFrom() + ";" + RequestsList.get(i).getTo() + ";"
                             + RequestsList.get(i).getRequestId() + ";";
@@ -964,7 +971,14 @@ public class UserHandler {
                     } else {
                         data = data + "No;";
                     }
-                    data = data + RequestsList.get(i).getType();
+                    data = data + RequestsList.get(i).getType()+";";
+                    data = data + RequestsList.get(i).getSlotID()+";";
+                    if(RequestsList.get(i).getSlotID().charAt(0) == 'W'){
+                        data = data + WMSlots.get(RequestsList.get(i).getSlotID()).getStartTime().toString();
+                    }
+                    else if(RequestsList.get(i).getSlotID().charAt(0) == 'V'){
+                        data = data + VPBookings.get(RequestsList.get(i).getSlotID()).getDeparture().toString();
+                    }
                 }
             }
         }

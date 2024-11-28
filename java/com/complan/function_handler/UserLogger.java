@@ -155,6 +155,10 @@ public class UserLogger {
                         System.out.println(RED + "Password should be atleast 9 charecters long..." + RESET);
                         continue;
                     }
+                    else if(response==4){
+                        System.out.println(RED +"User already logged in"+RESET);
+                        continue;
+                    }
                 } else if (command.equals("CREATE_WMSLOT")) {
                     String date = commands.get(1);
                     String time = commands.get(2);
@@ -484,13 +488,13 @@ public class UserLogger {
                     System.out.println(
                             "| * CREATE_WMSLOT <date(dd-mm-yy)> <time(hh:mm)>                                               |");
                     System.out.println(
-                            "| * DELETE_WMSLOT <slot ID> <password>                                                               |");
+                            "| * DELETE_WMSLOT <slot ID> <password>                                                         |");
                     System.out.println(
                             "| * ASK_WMSLOT <slot ID>                                                                       |");
                     System.out.println(
                             "| * RESPOND_REQUEST <requestID> <accept(y/n)>                                                  |");
                     System.out.println(
-                            "| * DISPLAY_REQUESTS                                                                              |");
+                            "| * DISPLAY_REQUESTS                                                                           |");
                     System.out.println(
                             "| * USE_WMSLOT <slot ID>  <otp>                                                                |");
                     System.out.println(
@@ -502,23 +506,23 @@ public class UserLogger {
                     System.out.println(
                             "| * JOIN_VPSLOT <slotID>                                                                       |");
                     System.out.println(
-                            "| * REMOVE_PARTNER <slotID> <partner email>  <password>                                              |");
+                            "| * REMOVE_PARTNER <slotID> <partner email>  <password>                                        |");
                     System.out.println(
-                            "| * LEAVE_VPSLOT <slotID> <password>                                                          |");
+                            "| * LEAVE_VPSLOT <slotID> <password>                                                           |");
                     System.out.println(
-                            "| * DELETE_VPSLOT <slotID> <password>                                                                    |");
+                            "| * DELETE_VPSLOT <slotID> <password>                                                          |");
                     System.out.println(
-                            "| * DISPLAY_WMSTATUS                                                                              |");
+                            "| * DISPLAY_WMSTATUS                                                                           |");
                     System.out.println(
-                            "| * AVAIL_CREDIT <password>                                                                             |");
+                            "| * AVAIL_CREDIT <password>                                                                    |");
                     System.out.println(
-                            "| * DISPLAY_PROFILE                                                                               |");
+                            "| * DISPLAY_PROFILE                                                                            |");
                     System.out.println(
-                            "| * DISPLAY_CREDITS                                                                               |");
+                            "| * DISPLAY_CREDITS                                                                            |");
                     System.out.println(
-                            "| * DISPLAY_POINTS                                                                                |");
+                            "| * DISPLAY_POINTS                                                                             |");
                     System.out.println(
-                            "| * DISPLAY_CMS                                                                                   |");
+                            "| * DISPLAY_CMS                                                                                |");
                     System.out.println(
                             "| * DISPLAY_LEADERBOARD                                                                        |");
                     System.out.println(
@@ -611,24 +615,17 @@ public class UserLogger {
                             "|  -> Once accepted by the pool owneer, the user is added to the pool                                               |");
                     System.out.println(
                             "|                                                                                                                   |");
-                    System.out.println("| " + YELLOW + BOLD
-                            + "2. Leaving a Pool                                                                                                 "
-                            + RESET + "|");
-                    System.out.println(
-                            "|  -> Users can leave the pool, but must do so atleast 2 hours prior to departure                                   |");
-                    System.out.println(
-                            "|  -> If a user leaves a pool less than 2 hours before departure, 20 points will be deducted                        |");
                     System.out.println(
                             "|                                                                                                                   |");
                     System.out.println("| " + YELLOW + BOLD
-                            + "3. Multiple Pools                                                                                                 "
+                            + "2. Multiple Pools                                                                                                 "
                             + RESET + "|");
                     System.out.println(
                             "|  -> Users are allowed to join multiple pools                                                                      |");
                     System.out.println(
                             "|                                                                                                                   |");
                     System.out.println("| " + YELLOW + BOLD
-                            + "4. Points                                                                                                         "
+                            + "3. Points                                                                                                         "
                             + RESET + "|");
                     System.out.println(
                             "|  -> No points are awarded for participating in vehicle pooling                                                    |");

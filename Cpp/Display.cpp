@@ -224,6 +224,8 @@ class Display{
         		cout << "+----------------------------------------------------------------------------------------------------+" << endl;
         		cout << fmt::format("|" + LIGHTBLUEBG + BLACK +  "{:<50}", "RequestID: " + requests[i][2]);
 				cout << fmt::format("{:<50}" +  RESET + "|", "Request Type: " + requests[i][5]) << endl;
+			cout << fmt::format("|" + LIGHTBLUEBG + BLACK +  "{:<50}", "Slot ID: " + requests[i][6]);
+        		cout << fmt::format("{:<50}" +  RESET + "|", "Slot Date: " + requests[i][7].substr(0,10) )<< endl;
 				cout << fmt::format("|" + LIGHTBLUEBG + BLACK +  "{:<50}", "From: " + requests[i][0]);
         		cout << fmt::format("{:<50}" +  RESET + "|", "To: " + requests[i][1]) << endl;
         		cout << fmt::format("|" + LIGHTBLUEBG + BLACK+"{:<50}", "HasResponded: " + requests[i][3]);
