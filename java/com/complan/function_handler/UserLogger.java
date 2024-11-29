@@ -317,10 +317,12 @@ public class UserLogger {
                     } else if (response == -1) {
                         System.out.println(RED + "User is not logged in..." + RESET);
                         continue;
-                    }
-                    else if(response== 6){
-                        System.out.println(RED+"Slot does not exist"+RESET);
+                    } else if (response == 6){
+                        System.out.println(RED+"Slot does not exist..."+RESET);
                         continue;
+                    } else if (response == 7) {
+                    	System.out.println(RED + "Request is not yours to repond..." + RESET);
+                    	continue;
                     }
                 } else if (command.equals("USE_WMSLOT")) {
                     String slotId = commands.get(1);
@@ -365,7 +367,11 @@ public class UserLogger {
                     String date = commands.get(1);
                     boolean yourslots = commands.get(2).equals("y");
                     LocalDateTime dt = parseDate(date,"0:00");
-                    Handler.viewVPSlotsOnDay(dt,yourslots);
+                    int response = Handler.viewVPSlotsOnDay(dt,yourslots);
+                    if (response == -1) {
+                    	System.out.println(RED + "Uer is not loggied in..." + RESET);
+                    	continue;
+                    }
                 } else if (command.equals("CREATE_VPSLOT")) {
                     String date = commands.get(1);
                     String time = commands.get(2);
@@ -500,7 +506,7 @@ public class UserLogger {
                     System.out.println(
                             "| * DISPLAY_WMSLOTS <date(dd-mm-yy)> <display only your slots(y/n)>                            |");
                     System.out.println(
-                            "| * DISPLAY_VPSLOTS <date(dd-mm-yy)> <time(hh:mm)> <from> <to> <show only your slots)y/n>      |");
+                            "| * DISPLAY_VPSLOTS <date(dd-mm-yy)> <display only your slots(y/n)>                            |");
                     System.out.println(
                             "| * CREATE_VPSLOT <date(dd-mm-yy)> <time(hh:mm)> <from> <to>                                   |");
                     System.out.println(
