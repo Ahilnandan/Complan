@@ -492,12 +492,22 @@ public class UserHandler {
          * 4 --> receiver does not have enough credits to accept request
          * -1 --> user not logged in
          * 5 --> already responded
+         * 6 --> slot does not exist
+         * 7 --> Not your request to respond
          */
-
+	
+		if (isLoggedIn() == false || currentUser == null) {
+            return -1;
+        }
+		
         if (RequestsList.get(requestID) == null) {// checking if request exists
             return 1;
         }
-
+		
+		if (!RequestsList.get(requestID).getTo().equals(currentUser.getEmail())){
+			return 7;
+		}
+		
         if (RequestsList.get(requestID).isAccepted() == true) {
             return 5;
         }
@@ -508,10 +518,6 @@ public class UserHandler {
 
         if (Users.get(RequestsList.get(requestID).getFrom()) == null) {// user does not exist
             return 2;
-        }
-
-        if (isLoggedIn() == false || currentUser == null) {
-            return -1;
         }
 
         boolean isWMR = RequestsList.get(requestID).getType() == "ask WMSlot" ? true : false;
